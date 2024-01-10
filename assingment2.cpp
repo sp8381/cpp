@@ -68,7 +68,7 @@ printf("price of fridge is equals to TV\n");
 }
 else 
 {
-printf("Invalid \n");
+printf("Invalid price\n");
 }
 return 0;
 }
