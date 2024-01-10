@@ -1,56 +1,74 @@
 #include<stdio.h>
-class Input
+
+class Fridge;
+
+class TV
 {
+int price;
 public:
-void operator>>(int &k)
+void setPrice(int price)
 {
-scanf("%d",&k);
-char a;
-while((a=getchar())!='\n' && a!=EOF);
+this->price=price;
 }
-void operator>>(char &k)
+int getPrice()
 {
-scanf("%c",&k);
-char a;
-while((a=getchar())!='\n' && a!=EOF);
+return this->price;
 }
-void operator>>(const char *(k))
+friend class Fridge;
+};
+
+
+class Fridge
 {
-scanf("%s",k);
-char a;
-while((a=getchar())!='\n' && a!=EOF);
+int price;
+public:
+void setPrice(int price)
+{
+this->price=price;
 }
-void operator>>(double &k)
+int getPrice()
 {
-scanf("%f",&k);
-char a;
-while((a=getchar())!='\n' && a!=EOF);
-}
-void operator>>(float &k)
-{
-scanf("%f",&k);
+return this->price;
 }
 
-};
-namespace sp
+int operator<(TV &t)
 {
-Input takeInput;
+return this->price<t.price;
 }
-using namespace sp;
+int operator>(TV &t)
+{
+return this->price>t.price;
+}
+int operator==(TV &t)
+{
+return this->price==t.price;
+}
+friend class compare;
+};
+
+
+ 
 int main()
 {
-int a;
-char b;
-char c[21];
-printf("Enter a number : ");
-takeInput>>a;
-printf("Enter a char : ");
-takeInput>>b;
-printf("Enter a string : ");
-takeInput>>c;
-
-printf("%d\n",a);
-printf("%c\n",b);
-printf("%s\n",c);
+Fridge f;
+TV t;
+f.setPrice(50000);
+t.setPrice(50000);
+if(f<t)
+{
+printf("price of fridge is less than TV\n");
+}
+else if(f>t)
+{
+printf("price of fridge is greater than TV\n");
+}
+else if(f==t)
+{
+printf("price of fridge is equals to TV\n");
+}
+else 
+{
+printf("Invalid \n");
+}
 return 0;
 }
