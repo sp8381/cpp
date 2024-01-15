@@ -9,16 +9,15 @@ char *ptr;
 int length;
 
 public:
-
-void printString()
-{
-cout<<ptr;
-}
-
 TMString()
 {
 ptr=NULL;
 cout<<"default constructor called"<<endl;
+}
+
+void printString()
+{
+cout<<this->ptr;
 }
 
 void operator=(char *g)
@@ -62,7 +61,6 @@ this->ptr[i]=v.ptr[i];
 }
 cout<<"data copied"<<endl;
 }
-
 };
 
 ostream & operator<<(ostream &o,TMString &j)
