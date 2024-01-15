@@ -9,33 +9,34 @@ char *ptr;
 int length;
 
 public:
-TMString()
-{
-ptr=NULL;
-cout<<"default constructor called"<<endl;
-}
 
 void printString()
 {
 cout<<this->ptr;
 }
 
+TMString()
+{
+ptr=NULL;
+cout<<"default constructor called"<<endl;
+}
+
 void operator=(char *g)
 {
 this->length=strlen(g);
 //condition check 
-if(ptr==NULL)
+if(this->ptr==NULL)
 {
 this->ptr=(char *)malloc(length+1);
-for(int i=0;i<length;i++) ptr[i]=g[i];
+for(int i=0;i<length;i++) this->ptr[i]=g[i];
 ptr[length]='\0';
 }
 else
 {
-free(ptr);
+free(this->ptr);
 this->ptr=(char *)malloc(length+1);
-for(int i=0;i<length;i++) ptr[i]=g[i];
-ptr[length]='\0';
+for(int i=0;i<length;i++) this->ptr[i]=g[i];
+this->ptr[length]='\0';
 }
 }
 
@@ -61,6 +62,7 @@ this->ptr[i]=v.ptr[i];
 }
 cout<<"data copied"<<endl;
 }
+
 };
 
 ostream & operator<<(ostream &o,TMString &j)
@@ -68,7 +70,6 @@ ostream & operator<<(ostream &o,TMString &j)
 j.printString();
 return o;
 }
-s
 
 int main()
 {
