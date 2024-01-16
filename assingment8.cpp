@@ -114,23 +114,46 @@ free(ptr2ptr);
 cout<<"memory released by destructor"<<endl;
 }
 
-};
- 
+void operator=()
+{
+if(ic.totalAdded>0)
+{
+ for(int i=0;i<ic.totalAdded;i++)
+ {
+  this-add(ic[j]);
+ }
+}
+else
+{
+ cout<<"Empty collection "<<endl;
+ return ;
+}
+}
+}; 
 
 int main()
 {
 IntCollection ic1;
-//int num;
+ 
 for(int i=0;i<1280;i++)
 {
 ic1.add(i);
 }
+cout<<"Printing collection of ic1"<<endl;
 for(int j=0;j<1285;j++)
 {
 cout<<"ic1 ["<<j<<"] : "<<ic1[j]<<endl;
 }
 
-
-//ic1
+IntCollection ic2;
+ic2=ic1;
+ic2.add(3040);
+ic2.add(5040);
+cout<<"Printing collection of ic2"<<endl;
+for(int i=0;i<ic2.getSize();i++)
+{
+cout<<"ic2 ["<<i<<"] : "<<ic1[i]<<endl;
+}
+ 
 return 0;
 }
