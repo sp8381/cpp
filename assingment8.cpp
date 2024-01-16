@@ -49,6 +49,11 @@ add10more();
 }
 }
 
+int getSize()
+{
+ return this->totalAdded;
+}
+
 void add10more()
 {
 cout<<"More memory added"<<endl;
@@ -114,13 +119,13 @@ free(ptr2ptr);
 cout<<"memory released by destructor"<<endl;
 }
 
-void operator=()
+void operator=(IntCollection &ic)
 {
 if(ic.totalAdded>0)
 {
  for(int i=0;i<ic.totalAdded;i++)
  {
-  this-add(ic[j]);
+  this->add(ic[i]);
  }
 }
 else
@@ -152,7 +157,7 @@ ic2.add(5040);
 cout<<"Printing collection of ic2"<<endl;
 for(int i=0;i<ic2.getSize();i++)
 {
-cout<<"ic2 ["<<i<<"] : "<<ic1[i]<<endl;
+cout<<"ic2 ["<<i<<"] : "<<ic2[i]<<endl;
 }
  
 return 0;
