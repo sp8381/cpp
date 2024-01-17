@@ -87,7 +87,9 @@ char rollNumber[21];
 char firstName[21];
 char lastName[21];
 char contactNumber[51];
-
+cout<<"----------------------"<<endl;
+cout<<"  Student Add Module"<<endl;
+cout<<"----------------------"<<endl;
 cout<<"Enter roll number: ";
 cin>>rollNumber;
 cout<<"Enter first name : ";
@@ -126,6 +128,8 @@ char fn[21];
 char ln[21];
 char rn[21];
 char cn[51];
+cout<<"----------------------"<<endl;
+cout<<"  Student List "<<endl;
 while(1)
 {
 fos<<rn;
