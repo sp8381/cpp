@@ -24,6 +24,11 @@ i++;
 }
 }
 
+void operator>>(char c)
+{
+fputc(c,this->ptr);
+}
+
 void close()
 {
 fclose(ptr);
@@ -95,13 +100,13 @@ cin>>contactNumber;
 FileInputStream fis("student.data","a");
 
 fis>>rollNumber;
-fis>>"\n";
+fis>>'\n';
 fis>>firstName;
-fis>>"\n";
+fis>>'\n';
 fis>>lastName;
-fis>>"\n";
+fis>>'\n';
 fis>>contactNumber;
-fis>>"\n";
+fis>>'\n';
 fis.close();
 cout<<"--------------"<<endl;
 cout<<"Student added"<<endl;
