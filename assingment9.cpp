@@ -11,7 +11,7 @@ class FileInputStream
 {
 FILE *ptr;
 public:
-FileInputStream(char *fileName,char *mode)
+FileInputStream(const char *fileName,const char *mode)
 {
 ptr=fopen(fileName,mode);
 }
@@ -47,7 +47,7 @@ class FileOutputStream
 FILE *ptr;
 public:
 
-FileOutputStream(char *fileName)
+FileOutputStream(const char *fileName)
 {
 ptr=fopen(fileName,"r");
 if(ptr==NULL) cout<<"Low memory, file not opened"<<endl;
