@@ -11,7 +11,6 @@ int size=10;
 int totalAdded=0;
 int p2p=0;
 int p=0;
-int count=0;
 
 public:
 IntCollection()
