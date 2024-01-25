@@ -110,7 +110,7 @@ if(success) *success=true;
 int TMArrayList::get(int index,int *success)
 {
 if(success) *success=false;
-if(index<=0 || index>=this->size) return 0;
+if(index<0 || index>=this->size) return 0;
 int rowIndex=index/10;
 int columnIndex=index%10;
 if(success) *success=true;
