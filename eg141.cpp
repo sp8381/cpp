@@ -31,26 +31,12 @@ cout<<"Copy constructor called"<<endl;
 w=b.w;
 }
 };
-class aaa
-{
-public:
-aaa()
-{
-}
-aaa(int a)
-{
-}
-};
-void doSomething(aaa t)		//Bulb t=10, 
-{
-cout<<"another function with parameter Bulb"<<endl;
-}
+
 void doSomething(Bulb t)	//Bulb t=10; new object created here
 {
 cout<<"33333"<<endl;
 cout<<"Wattage is "<<t.getWattage()<<endl;;
 }
-
 int main()
 {
 doSomething(10);
