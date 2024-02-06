@@ -5,3 +5,10 @@ to
 lecture 19 this pointer 
 ------------------------------------------
 
+notepad shortcut 
+
+alt + tab	(to shift the window windows of apps) 
+ctrl shift -> 	(to select a word) 
+ctrl ->		(to go to the starting of word (not line))
+win + tab 	(to change the application) 
+window + uparrow 	(to maximise screen)

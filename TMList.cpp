@@ -22,7 +22,7 @@ virtual void removeAll()=0;
 virtual void clear()=0;
 };
 
-class TMArrayList
+class TMArrayList:public TMList
 {
 private:
 int **ptr;
@@ -173,6 +173,7 @@ if(success) *success=true;
 }
 void TMArrayList::removeAll()
 {
+this->size=0;
 }
 void TMArrayList::clear()
 {
