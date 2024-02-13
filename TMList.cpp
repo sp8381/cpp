@@ -12,7 +12,7 @@ class TMList
 {
 public:
 virtual void add(int data,bool *success)=0;
-virtual int get(int index,int *success)=0;
+virtual int get(int index,int *success) const =0;
 virtual int getSize()=0;
 
 virtual void insertAt(int index,int data,bool *success)=0;
@@ -21,6 +21,18 @@ virtual void update(int index,int data,int *success)=0;
 virtual void removeAll()=0;
 virtual void clear()=0;
 };
+
+/*
+default constructor (Done)
+parameterised constructor (Done)
+copy constructor (Done)
+operator=  (Done)
+operator+= (Done)
+operator[]	self
+operator+ 
+virtual destructor 
+
+*/
 
 class TMArrayList:public TMList
 {
@@ -32,9 +44,14 @@ bool addRow();
 public:
 TMArrayList();
 TMArrayList(int bufferSize);
+TMArrayList(const TMArrayList &other);
 ~TMArrayList();
+TMArrayList & operator=(const TMArrayList &other);
+void operator+=(const TMArrayList &other);
+TMArrayList operator+(const TMArrayList &other);
+TMArrayList& operator[](int index);
 void add(int data,bool *success);
-int  get(int index,int *success);
+int  get(int index,int *success) const;
 int  getSize();
 void insertAt(int index,int data,bool *success);
 int  removeAt(int index,int *success);
@@ -92,7 +109,83 @@ this->capacity=rows*10;
 this->size=0;
 }
 }
+TMArrayList::TMArrayList(const TMArrayList &other)
+{
+int bufferSize=other.size;
+if(bufferSize<=0)
+{
+this->ptr=new int *[10];
+this->ptr[0]=new int[10];
+this->capacity=10;
+this->size=0;
+}
+else
+{
+int rows;
+int numberOfPointers;
+rows=bufferSize/10;
+if(bufferSize%10!=0) rows++;
+numberOfPointers=rows+(10-(rows%10));
+this->ptr=new int *[numberOfPointers];
+for(int i=0;i<rows;i++)
+{
+this->ptr[i]=new int[10];
+}
+this->capacity=rows*10;
+this->size=0;
+}
+int succ;
+for(int i=0;i<other.size;i++)
+{
+this->add(other.get(i,&succ),&succ);
+}
 
+}
+TMArrayList::~TMArrayList()
+{
+int rows=this->capacity/10;
+int j;
+for(j=0;j<rows;j++)
+{
+delete [] this->ptr[j];
+}
+delete [] this->ptr;
+}
+
+TMArrayList & TMArrayList::operator=(const TMArrayList &other)
+{
+this->size=0;
+int succ;
+for(int e=0;e<other.size;e++)
+{
+this->add(other.get(e,&succ),&succ);
+}
+return *this;
+}
+void TMArrayList::operator+=(const TMArrayList &other)
+{
+int succ;
+for(int e=0;e<other.size;e++)
+{
+this->add(other.get(e,&succ),&succ);
+}
+}
+TMArrayList TMArrayList::operator+(const TMArrayList &other)
+{
+TMArrayList k;
+int succ;
+for(int e=0;e<this->size;e++) k.add(this->get(e,&succ),&succ);
+for(int e=0;e<other.size;e++) k.add(other.get(e,&succ),&succ);
+return k;
+}
+TMArrayList& TMArrayList::operator[](int index)
+{
+if(index<0 || index>size)
+{
+return *this;
+}
+return *this;
+}
 void TMArrayList::add(int data,bool *success)
 {
 if(success) *success=false;
@@ -107,7 +200,7 @@ this->ptr[rowIndex][columnIndex]=data;
 this->size++;
 if(success) *success=true;
 }
-int TMArrayList::get(int index,int *success)
+int TMArrayList::get(int index,int *success) const 
 {
 if(success) *success=false;
 if(index<0 || index>=this->size) return 0;
@@ -178,16 +271,7 @@ this->size=0;
 void TMArrayList::clear()
 {
 }
-TMArrayList::~TMArrayList()
-{
-int rows=this->capacity/10;
-int j;
-for(j=0;j<rows;j++)
-{
-delete [] this->ptr[j];
-}
-delete [] this->ptr;
-}
+
 int main()
 {
 TMArrayList list1(6000);
@@ -229,5 +313,40 @@ for(int e=0;e<list1.getSize();e++)
 cout<<list1.get(e,&k)<<" ";
 }
 cout<<endl;
+
+TMArrayList list2;
+for(int u=908;u<=1034;u++) list2.add(u,&k);
+for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
+cout<<endl<<"Size is "<<list2.getSize()<<endl;
+list2=list1;
+cout<<"After assigning list1 to list2"<<endl;
+for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
+cout<<endl<<"Size of list2 : "<<list2.getSize()<<endl;
+cout<<"Size of list1 : "<<list1.getSize()<<endl;
+
+list2+=list1;
+cout<<"After list2+=list1 "<<endl;
+for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
+cout<<endl<<"Size of list2 : "<<list2.getSize()<<endl;
+cout<<"Size of list1 : "<<list1.getSize()<<endl;
+
+TMArrayList list3;
+list3=list2+list1;
+for(int x=0;x<list3.getSize();x++) cout<<list3.get(x,&k)<<" ";
+cout<<endl<<"Size of list3 : "<<list3.getSize()<<endl;
+cout<<"Size of list2 : "<<list2.getSize()<<endl;
+cout<<"Size of list1 : "<<list1.getSize()<<endl;
+
+cout<<"using Operator[] "<<endl;
+list3[75]=1234;
+list3[76]=3029;
+list3[77]=2040;
+for(int x=0;x<list3.getSize();x++) cout<<list3.get(x,&k)<<" ";
+cout<<endl<<"Size of list3 : "<<list3.getSize()<<endl;
+cout<<"Size of list2 : "<<list2.getSize()<<endl;
+cout<<"Size of list1 : "<<list1.getSize()<<endl;
+//cout<<"list3[77] : "<<list3[73]<<endl;
+
+
 return 0;
 }
