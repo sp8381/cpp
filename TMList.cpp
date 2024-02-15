@@ -41,7 +41,7 @@ int **ptr;
 int capacity;
 int size;
 bool addRow();
-int allocationFlag;	//for handling issue related to operator +
+int allocationFlag;		//for handling issue related to operator +
 public:
 TMArrayList();
 TMArrayList(int bufferSize);
@@ -79,17 +79,17 @@ if(this->ptr[i]==NULL) return false;
 this->capacity=this->capacity+10;
 return true;
 }
-TMArrayList::TMArrayList()	//for handling issue related to operator +
+TMArrayList::TMArrayList()
 {
-this->allocationFlag=0;
+this->allocationFlag=0;		//for handling issue related to operator +
 this->ptr=new int *[10];
 this->ptr[0]=new int[10];
 this->capacity=10;
 this->size=0;
 }
-TMArrayList::TMArrayList(int bufferSize)	//for handling issue related to operator +
+TMArrayList::TMArrayList(int bufferSize)
 {
-this->allocationFlag=0;
+this->allocationFlag=0;		//for handling issue related to operator +
 if(bufferSize<=0)
 {
 this->ptr=new int *[10];
@@ -113,9 +113,9 @@ this->capacity=rows*10;
 this->size=0;
 }
 }
-TMArrayList::TMArrayList(const TMArrayList &other)	//for handling issue related to operator +
+TMArrayList::TMArrayList(const TMArrayList &other)
 {
-this->allocationFlag=0;
+this->allocationFlag=0;		//for handling issue related to operator +
 int bufferSize=other.size;
 if(bufferSize<=0)
 {
@@ -146,9 +146,10 @@ this->add(other.get(i,&succ),&succ);
 }
 
 }
-TMArrayList::~TMArrayList()	//for handling issue related to operator+
+TMArrayList::~TMArrayList()
 {
-if(this->allocationFlag==0) 		//or this->ptr!=NULL but ptr is declared const.
+if(this->allocationFlag==0)		//for handling issue related to operator +
+			 		//or this->ptr!=NULL but ptr is declared const.
 {
 cout<<"Releasing memory "<<this->ptr<<endl;
 int rows=this->capacity/10;
@@ -162,9 +163,9 @@ delete [] this->ptr;
 }
 cout<<"Destructor Ends"<<endl;
 }
-TMArrayList & TMArrayList::operator=(const TMArrayList &other)	//for handling issue related to operator +
+TMArrayList & TMArrayList::operator=(const TMArrayList &other)	
 {
-if(other.allocationFlag==0)
+if(other.allocationFlag==0)		//for handling issue related to operator +
 {
 this->size=0;
 int succ;
@@ -201,13 +202,13 @@ this->add(other.get(e,&succ),&succ);
 }
 }
 
-TMArrayList TMArrayList::operator+(const TMArrayList &other)	//for handling issue related to operator +
+TMArrayList TMArrayList::operator+(const TMArrayList &other)
 {
 TMArrayList k;
 int succ;
 for(int e=0;e<this->size;e++) k.add(this->get(e,&succ),&succ);
 for(int e=0;e<other.size;e++) k.add(other.get(e,&succ),&succ);
-k.allocationFlag=1;
+k.allocationFlag=1;			//for handling issue related to operator +
 return k;
 }
 
@@ -312,6 +313,9 @@ this->size=0;
 void TMArrayList::clear()
 {
 }
+
+//TMForwardList Implementation starts here 
+
 
 int main()
 {
