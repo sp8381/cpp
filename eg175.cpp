@@ -29,11 +29,11 @@ cout<<"Operator= got called for code : "<<this->code<<endl;
 cout<<"other's code : "<<other.code<<endl;
 return *this;
 }
-aaa & operator+(const aaa &other)
+aaa operator+(const aaa &other)
 {
+aaa k;
 cout<<"Operator+ got called for code : "<<this->code<<endl;
 cout<<"other's code : "<<other.code<<endl;
-aaa k;
 return k;
 }
 };
