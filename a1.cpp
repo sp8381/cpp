@@ -1,3 +1,5 @@
+//CREATING REPLIACA OF 	cin>>
+
 #include<stdio.h>
 class Input
 {

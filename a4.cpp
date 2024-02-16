@@ -1,3 +1,7 @@
+//Assigning string to object 
+//TMString s;
+//s="Ujjain";
+
 #include<iostream>
 #include<stdlib.h>
 #include<string.h>
@@ -18,10 +22,10 @@ cout<<this->ptr;
 TMString()
 {
 ptr=NULL;
-cout<<"default constructor called"<<endl;
+//cout<<"default constructor called"<<endl;
 }
 
-void operator=(char *g)
+void operator=(const char *g)
 {
 this->length=strlen(g);
 //condition check 
@@ -42,7 +46,7 @@ this->ptr[length]='\0';
 
 ~TMString()
 {
-cout<<"destructor called"<<endl;
+//cout<<"destructor called"<<endl;
 free(ptr);
 }
 
@@ -54,13 +58,14 @@ cout<<"Empty string cannot assign"<<endl;
 return;
 }
 int len=strlen(v.ptr);
-this->ptr=(char *)malloc(len);
-cout<<"memory allocated"<<len<<endl;
+this->ptr=(char *)malloc(len+1);
+cout<<"memory allocated for length : "<<len<<endl;
 for(int i=0;i<len;i++)
 {
 this->ptr[i]=v.ptr[i];
 }
-cout<<"data copied"<<endl;
+ptr[len]='\0';
+//cout<<"data copied"<<endl;
 }
 
 };

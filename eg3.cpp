@@ -1,29 +1,30 @@
-#include<stdio.h>
-namespace sales
+// topic related to operator[] 
+
+#include<iostream>
+using namespace std;
+class aaa
 {
-int x=10;
-int numberOftransation=50;
-int getLastTransactionAmount()
+int x[10];
+public:
+void setData(int i,int data)
 {
-return 1000;
+x[i]=data;
 }
-}
-namespace purchase
+int & operator[](int index)
 {
-int y=200;
-int numberOfTransaction=100;
-int getLastTransactionAmount()
-{
-return 2000;
+return x[index];
 }
-}
-using namespace sales;
+};
 int main()
 {
+aaa a;
+a[0]=10;
+a[1]=23;
+a[2]=434;
+a[1020]=202;
+cout<<a[0]<<endl;
+cout<<a[1]<<endl;
+cout<<a[2]<<endl;
 
-int amount=getLastTransactionAmount();
-printf("Last Transaction Amount : %d\n",amount);
-printf("%d\n",x);
-printf("%d\n",purchase::y);
 return 0;
 }

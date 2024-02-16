@@ -1,0 +1,27 @@
+watch a lecture daily
+make notes of the lecture daily
+
++++++++++++++++++++++++++++++++
+
+BLOG on c 
+Blog on CPP
+
+Revision
+(s-fileHandling, cpp-TMArrayList)
+
+ssc tech Men (last date 21 feb)
+
+Make short Notes of c and c++ 
+
+Create index page of c and cpp
+
+Make note of topic to learn(ratta marne wale topics)
+
+	assingment 5	(Done 7 feb 2024)
+
+assingment 6
+
+assingment 7
+
+CRUD app using file handling 
+CRUD app using singlyLinkedList

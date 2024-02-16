@@ -1,3 +1,5 @@
+//Array List (created a collection of 100 int like a chessBoard or snakeBoard, insertData anywhere)
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<iostream>

@@ -253,7 +253,6 @@ if(ptr2ptr[i][j]=0)
 totalAdded--;
 }
 else *success=0;
-return 0;
 }
 
 void TMArrayList::update(int index,int data,int *success)

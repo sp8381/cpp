@@ -108,6 +108,7 @@ else
 j->next=t->next;
 }
 free(t);	//remove
+return 0;
 }
 
 void TMSinglyLinkedList::update(int index,int data,int *success)

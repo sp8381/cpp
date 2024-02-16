@@ -1,5 +1,3 @@
-// File Handling classes
-
 #include<iostream>
 using namespace std;
 #include<stdio.h>
@@ -11,7 +9,7 @@ class FileInputStream
 {
 FILE *ptr;
 public:
-FileInputStream(const char *fileName,const char *mode)
+FileInputStream(char *fileName,char *mode)
 {
 ptr=fopen(fileName,mode);
 }
@@ -24,11 +22,6 @@ while(string[i]!='\0')
 fputc(string[i],this->ptr);
 i++;
 }
-}
-
-void operator>>(char c)
-{
-fputc(c,this->ptr);
 }
 
 void close()
@@ -47,7 +40,7 @@ class FileOutputStream
 FILE *ptr;
 public:
 
-FileOutputStream(const char *fileName)
+FileOutputStream(char *fileName)
 {
 ptr=fopen(fileName,"r");
 if(ptr==NULL) cout<<"Low memory, file not opened"<<endl;
@@ -89,9 +82,7 @@ char rollNumber[21];
 char firstName[21];
 char lastName[21];
 char contactNumber[51];
-cout<<"----------------------"<<endl;
-cout<<"  Student Add Module"<<endl;
-cout<<"----------------------"<<endl;
+
 cout<<"Enter roll number: ";
 cin>>rollNumber;
 cout<<"Enter first name : ";
@@ -104,13 +95,13 @@ cin>>contactNumber;
 FileInputStream fis("student.data","a");
 
 fis>>rollNumber;
-fis>>'\n';
+fis>>"\n";
 fis>>firstName;
-fis>>'\n';
+fis>>"\n";
 fis>>lastName;
-fis>>'\n';
+fis>>"\n";
 fis>>contactNumber;
-fis>>'\n';
+fis>>"\n";
 fis.close();
 cout<<"--------------"<<endl;
 cout<<"Student added"<<endl;
@@ -130,8 +121,6 @@ char fn[21];
 char ln[21];
 char rn[21];
 char cn[51];
-cout<<"----------------------"<<endl;
-cout<<"  Student List "<<endl;
 while(1)
 {
 fos<<rn;

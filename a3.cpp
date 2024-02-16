@@ -1,4 +1,4 @@
-//assingment is to print the price of object only using name
+//Assingment is to print the price of object only using name
 
 #include<iostream>
 using namespace std;
@@ -15,14 +15,12 @@ int getPrice()
 return this->price;
 }
 };
-
-//Independent function
+	//Independent function
 ostream & operator<<(ostream &o,TV &t)
 {
 o<<t.getPrice();
 return o;
 }
-
 int main()
 {
 TV t;

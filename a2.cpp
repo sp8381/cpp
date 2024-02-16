@@ -1,7 +1,8 @@
+//COMPARING PRICE USING OBJECT OF CLASS
+
 #include<stdio.h>
 
 class Fridge;
-
 class TV
 {
 int price;
@@ -16,8 +17,6 @@ return this->price;
 }
 friend class Fridge;
 };
-
-
 class Fridge
 {
 int price;
@@ -46,8 +45,6 @@ return this->price==t.price;
 friend class compare;
 };
 
-
- 
 int main()
 {
 Fridge f;

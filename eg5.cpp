@@ -1,33 +1,32 @@
-#include<stdio.h>
-namespace ThinkingMachines
+#include<iostream>
+using namespace std;
+class aaa
 {
-namespace sales
+public:
+virtual aaa & operator=(const aaa &)=0;
+};
+class bbb:public aaa
 {
-int x=10;
-int numberOftransation=50;
-int getLastTransactionAmount()
+bbb & operator=(const aaa &)
 {
-return 1000;
 }
-}
-namespace purchase
+aaa & operator=(const aaa &)
 {
-int y=200;
-int numberOfTransaction=100;
-int getLastTransactionAmount()
+}
+};
+class ccc:public aaa
 {
-return 2000;
+ccc & operator=(const ccc &)
+{
 }
+aaa & operator=(const aaa &)
+{
 }
-}
-using namespace ThinkingMachines::sales;
-using namespace ThinkingMachines::purchase;
+};
 int main()
 {
-
-int amount=ThinkingMachines::sales::getLastTransactionAmount();
-printf("Last Transaction Amount : %d\n",amount);
-printf("%d\n",x);
-printf("%d\n",y);
+bbb b;
+ccc c;
+b=c;
 return 0;
 }
