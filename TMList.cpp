@@ -13,7 +13,7 @@ class TMList
 public:
 virtual void add(int data,bool *success)=0;
 virtual int get(int index,int *success) const =0;
-virtual int getSize()=0;
+virtual int getSize() const=0;
 
 virtual void insertAt(int index,int data,bool *success)=0;
 virtual int removeAt(int index,int *success)=0;
@@ -53,7 +53,7 @@ TMArrayList operator+(const TMArrayList &other);
 int & operator[](int index);	//assingment - (done)
 void add(int data,bool *success);
 int  get(int index,int *success) const;
-int  getSize();
+int  getSize() const;
 void insertAt(int index,int data,bool *success);
 int  removeAt(int index,int *success);
 void update(int index,int data,int *success);
@@ -246,7 +246,7 @@ if(success) *success=true;
 return ptr[rowIndex][columnIndex];
 }
 
-int TMArrayList::getSize()
+int TMArrayList::getSize() const
 {
 return this->size;
 } 
@@ -341,7 +341,7 @@ TMForwardList operator+(const TMForwardList &other);
 int operator[](int index);
 void add(int data,bool *success);
 int  get(int index,int *success) const;
-int  getSize();
+int  getSize() const;
 void insertAt(int index,int data,bool *success);
 int  removeAt(int index,int *success);
 void update(int index,int data,int *success);
@@ -364,20 +364,50 @@ this->allocationFlag=0;
 }
 TMForwardList::TMForwardList(const TMForwardList &other)
 {
+this->start=NULL;
+this->end=NULL;
+this->size=0;
+this->allocationFlag=0;
+int succ;
+for(int e=0;e<other.getSize();e++)
+{
+this->add(other.get(e,&succ),&succ);
 }
+}
+
 TMForwardList::~TMForwardList()
 {
+if(allocationFlag==0) this->clear();
 }
+
 TMForwardList & TMForwardList::operator=(const TMForwardList &other)	
 {
+this->clear();
+if(allocationFlag==1)
+{
+this->size=other.size;
+this->start=other.start;
+this->end=other.end;
+}
+else
+{
+int succ;
+for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
+}
 return *this;
 }
 void TMForwardList::operator+=(const TMForwardList &other)
 {
+int succ;
+for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
+
 TMForwardList TMForwardList::operator+(const TMForwardList &other)
 {
-return *this;
+TMForwardList k;
+k+=(*this);
+k+=other;
+return k;
 }
 int TMForwardList::operator[](int index)
 {
@@ -412,7 +442,7 @@ for(int x=0;x<index;x++) t=t->next;
 if(success) *success=true;
 return t->data;
 }
-int TMForwardList::getSize()
+int TMForwardList::getSize() const
 {
 return this->size;
 } 
@@ -620,48 +650,41 @@ int main()
 {
 TMForwardList list1(6000);
 bool k;
-for(int i=100;i<=123;i++) list1.add(i,&k);
+for(int i=101;i<=110;i++) list1.add(i,&k);
+if(k) cout<<"Added Successfully"<<endl;
+else cout<<"Unable to add"<<endl;
 cout<<"Size of list1 is : "<<list1.getSize()<<endl;
 cout<<"Contents of list1"<<endl;
 for(int i=0;i<list1.getSize();i++) cout<<list1.get(i,&k)<<"  ";
 cout<<endl;
-//list1.removeAll();
-cout<<endl<<"*******************"<<endl;
-list1.update(0,22,&k);
-list1.update(1,523,&k);
-cout<<"value of k "<<k<<endl;
-list1.update(220,413,&k);
-cout<<"value of k "<<k<<endl;
-cout<<"list1 Size : "<<list1.getSize()<<endl;
-cout<<"Contents of list1 after updating the data"<<endl;
-for(int i=0;i<list1.getSize();i++) cout<<list1.get(i,&k)<<"  ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
-cout<<list1.removeAt(0,&k)<<" ";
-cout<<list1.removeAt(1,&k)<<" ";
-cout<<list1.removeAt(10,&k)<<" ";
-cout<<list1.removeAt(30,&k)<<endl;
-cout<<"list1 Size : "<<list1.getSize()<<endl;
-cout<<"Contents of list1 after removing the data"<<endl;
-for(int i=0;i<list1.getSize();i++) cout<<list1.get(i,&k)<<"  ";
-cout<<endl<<"*******************"<<endl;
-
-//list1.insertAt(110,5432,&k);
-list1.insertAt(21,124,&k);
-list1.insertAt(10,112,&k);
-list1.insertAt(1,102,&k);
-list1.insertAt(0,22,&k);
-cout<<"list1 Size : "<<list1.getSize()<<endl;
-cout<<"Contents of list1 after Inserting the data"<<endl;
-for(int i=0;i<list1.getSize();i++) cout<<list1.get(i,&k)<<"  ";
-
 cout<<endl<<"*******************"<<endl;
 
 TMForwardList list2;
-cout<<"Contents of list2"<<endl;
-for(int i=934;i<1027;i++) list2.add(i,&k);
+list2.add(1010,&k);
+list2.add(2020,&k);
+list2.add(3030,&k);
+list2.add(4040,&k);
 cout<<"Size of list2 is : "<<list2.getSize()<<endl;
-for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
+cout<<"Contents of list2"<<endl;
+for(int i=0;i<list2.getSize();i++) cout<<list2.get(i,&k)<<"  ";
 cout<<endl;
+cout<<endl<<"*******************"<<endl;
+
+TMForwardList list3;
+list3=list2+list1;
+cout<<"Size of list3 is "<<list3.getSize()<<endl;
+cout<<"Contents of list3"<<endl;
+for(int e=0;e<list3.getSize();e++) cout<<list3.get(e,&k)<<" ";
+cout<<endl;
+cout<<endl<<"*******************"<<endl;
+
+TMForwardList list4;
+list4=list3+list2+list1;
+cout<<"Size of list4 is "<<list4.getSize()<<endl;
+cout<<"Contents of list4"<<endl;
+for(int e=0;e<list4.getSize();e++) cout<<list4.get(e,&k)<<" ";
+cout<<endl;
+
+
 return 0;
 }
