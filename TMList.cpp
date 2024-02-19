@@ -161,6 +161,7 @@ this->add(other.get(i,&succ),&succ);
 TMArrayList::TMArrayList(const TMList &other)
 {
 cout<<"Parameterised constructor of TMArrayList with parameter TMList &"<<endl;
+	//Here, we can also allocate memory using default constructor.
 int rows;
 int numberOfPointers;
 int bufferSize=other.getSize();
