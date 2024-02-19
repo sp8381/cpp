@@ -24,26 +24,31 @@ int getPrice()
 {
 return this->price;
 }
-void operator++()		//prefix
+int operator++()		//prefix
 {
+cout<<"Operator++ (prefix) got called"<<endl;
 this->price=this->price+50;
+return this->price;
 }
-void operator++(int)		//postfix
+int operator++(int)		//postfix
 {
+cout<<"Operator++ (postfix) got called"<<endl;
+int k;
+k=this->price;
 this->price=this->price+50;
+return k;
 }
 int operator=(Toy &t)
 {
+cout<<"Operator= got called"<<endl;
 return t.getPrice();
 }
-friend Toy & operator=(int a,Toy &t);
-};
-
-Toy & operator=(int a,Toy &t)
+operator int()
 {
-a=t.price;
-return t;
+cout<<"type conversion got called"<<endl;
+return this->price;
 }
+};
 
 
 int main()
@@ -51,12 +56,14 @@ int main()
 Toy t1;
 t1.setPrice(120);
 cout<<"Price of toy : "<<t1.getPrice()<<endl;
-int a;
-a=10;
-a=t1;
-cout<<a;
-cout<<"Price of toy after postfix increment: "<<t1.getPrice()<<endl;
-++t1;
+int a,b,c;
+a=t1++;
+cout<<"After a=t1++"<<endl;
+cout<<"a = "<<a<<endl;
+cout<<"Price of toy after postfix increament : "<<t1.getPrice()<<endl;
+b=++t1;
+cout<<"After b=++t1"<<endl;
+cout<<"b = "<<b<<endl;
 cout<<"Price of toy after prefix increment: "<<t1.getPrice()<<endl;
 
 return 0;
