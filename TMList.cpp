@@ -231,6 +231,7 @@ return *this;
 
 TMArrayList & TMArrayList::operator=(const TMList &other)	
 {
+this->clear();
 cout<<"Operator= got called for TMArrayList with parameter TMList"<<endl;
 this->size=0;
 int succ;
