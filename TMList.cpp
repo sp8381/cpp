@@ -20,6 +20,15 @@ virtual int removeAt(int index,int *success)=0;
 virtual void update(int index,int data,int *success)=0;
 virtual void removeAll()=0;
 virtual void clear()=0;
+TMList()
+{
+cout<<"Default constructor of TMlist"<<endl;
+}
+TMList(const TMList &other)
+{
+cout<<"Copy constructor of TMlist"<<endl;
+}
+
 };
 
 /*
@@ -46,10 +55,14 @@ public:
 TMArrayList();
 TMArrayList(int bufferSize);
 TMArrayList(const TMArrayList &other);
+TMArrayList(const TMList &other);
 ~TMArrayList();
 TMArrayList & operator=(const TMArrayList &other);
+TMArrayList & operator=(const TMList &other);
 void operator+=(const TMArrayList &other);
+void operator+=(const TMList &other);
 TMArrayList operator+(const TMArrayList &other);
+TMArrayList operator+(const TMList &other);
 int & operator[](int index);	//assingment - (done)
 void add(int data,bool *success);
 int  get(int index,int *success) const;
@@ -143,8 +156,33 @@ for(int i=0;i<other.size;i++)
 {
 this->add(other.get(i,&succ),&succ);
 }
-
 }
+
+TMArrayList::TMArrayList(const TMList &other)
+{
+cout<<"Parameterised constructor of TMArrayList with parameter TMList &"<<endl;
+int rows;
+int numberOfPointers;
+int bufferSize=other.getSize();
+rows=bufferSize/10;
+if(bufferSize%10!=0) rows++;
+numberOfPointers=rows+(10-(rows%10));
+this->ptr=new int *[numberOfPointers];
+for(int i=0;i<rows;i++)
+{
+this->ptr[i]=new int[10];
+}
+this->capacity=rows*10;
+this->size=0;
+
+int succ;
+for(int i=0;i<other.getSize();i++)
+{
+this->add(other.get(i,&succ),&succ);
+}
+}
+
+
 TMArrayList::~TMArrayList()
 {
 if(this->allocationFlag==0)		//for handling issue related to operator +
@@ -189,6 +227,19 @@ this->size=other.size;
 }
 return *this;
 }
+
+TMArrayList & TMArrayList::operator=(const TMList &other)	
+{
+cout<<"Operator= got called for TMArrayList with parameter TMList"<<endl;
+this->size=0;
+int succ;
+for(int e=0;e<other.getSize();e++)
+{
+this->add(other.get(e,&succ),&succ);
+}
+return *this;
+}
+
 void TMArrayList::operator+=(const TMArrayList &other)
 {
 int succ;
@@ -196,6 +247,12 @@ for(int e=0;e<other.size;e++)
 {
 this->add(other.get(e,&succ),&succ);
 }
+}
+
+void TMArrayList::operator+=(const TMList &other)
+{
+int succ;
+for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
 
 TMArrayList TMArrayList::operator+(const TMArrayList &other)
@@ -208,16 +265,27 @@ k.allocationFlag=1;			//for handling issue related to operator +
 return k;
 }
 
+
+TMArrayList TMArrayList::operator+(const TMList &other)
+{
+TMArrayList k;
+int succ;
+for(int e=0;e<this->size;e++) k.add(this->get(e,&succ),&succ);
+for(int e=0;e<other.getSize();e++) k.add(other.get(e,&succ),&succ);
+k.allocationFlag=1;
+return k;
+}
+
 int & TMArrayList::operator[](int index)	//(done)
 {
 int succ;
 int faltu;
-if(index<0 || index>size)
-{
-return faltu;
-}
 int rowIndex=index/10;
 int columnIndex=index%10;
+if(index<0 || index>size)
+{
+return ptr[rowIndex][columnIndex];
+}
 return ptr[rowIndex][columnIndex];
 }
 
@@ -334,10 +402,14 @@ public:
 TMForwardList();
 TMForwardList(int bufferSize);
 TMForwardList(const TMForwardList &other);
+TMForwardList(const TMList &other);
 ~TMForwardList();
 TMForwardList & operator=(const TMForwardList &other);
+TMForwardList & operator=(const TMList &other);
 void operator+=(const TMForwardList &other);
+void operator+=(const TMList &other);
 TMForwardList operator+(const TMForwardList &other);
+TMForwardList operator+(const TMList &other);
 int operator[](int index);
 void add(int data,bool *success);
 int  get(int index,int *success) const;
@@ -375,6 +447,20 @@ this->add(other.get(e,&succ),&succ);
 }
 }
 
+TMForwardList::TMForwardList(const TMList &other)
+{
+cout<<"Parameterised constructor of TMForwardList with parameter TMList &"<<endl;
+this->start=NULL;
+this->end=NULL;
+this->size=0;
+this->allocationFlag=0;
+int succ;
+for(int e=0;e<other.getSize();e++)
+{
+this->add(other.get(e,&succ),&succ);
+}
+}
+
 TMForwardList::~TMForwardList()
 {
 if(allocationFlag==0) this->clear();
@@ -396,7 +482,21 @@ for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
 return *this;
 }
+TMForwardList & TMForwardList::operator=(const TMList &other)
+{
+this->clear();
+int succ;
+for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
+return *this;
+}
+
 void TMForwardList::operator+=(const TMForwardList &other)
+{
+int succ;
+for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
+}
+
+void TMForwardList::operator+=(const TMList &other)
 {
 int succ;
 for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
@@ -409,6 +509,15 @@ k+=(*this);
 k+=other;
 return k;
 }
+
+TMForwardList TMForwardList::operator+(const TMList &other)
+{
+TMForwardList k;
+k+=(*this);
+k+=other;
+return k;
+}
+
 int TMForwardList::operator[](int index)
 {
 return 0;
@@ -650,7 +759,7 @@ int main()
 {
 TMForwardList list1(6000);
 bool k;
-for(int i=101;i<=110;i++) list1.add(i,&k);
+for(int i=101;i<=105;i++) list1.add(i,&k);
 if(k) cout<<"Added Successfully"<<endl;
 else cout<<"Unable to add"<<endl;
 cout<<"Size of list1 is : "<<list1.getSize()<<endl;
@@ -663,28 +772,53 @@ TMForwardList list2;
 list2.add(1010,&k);
 list2.add(2020,&k);
 list2.add(3030,&k);
-list2.add(4040,&k);
 cout<<"Size of list2 is : "<<list2.getSize()<<endl;
 cout<<"Contents of list2"<<endl;
 for(int i=0;i<list2.getSize();i++) cout<<list2.get(i,&k)<<"  ";
 cout<<endl;
 cout<<endl<<"*******************"<<endl;
 
-TMForwardList list3;
-list3=list2+list1;
-cout<<"Size of list3 is "<<list3.getSize()<<endl;
-cout<<"Contents of list3"<<endl;
-for(int e=0;e<list3.getSize();e++) cout<<list3.get(e,&k)<<" ";
+
+TMArrayList list5(list1);
+cout<<"After list5(list1) "<<endl;
+list5.add(1010,&k);
+list5.add(1221,&k);
+list5.add(3223,&k);
+cout<<"Contents of list5"<<endl;
+for(int e=0;e<list5.getSize();e++) cout<<list5.get(e,&k)<<" ";
 cout<<endl;
 cout<<endl<<"*******************"<<endl;
 
-TMForwardList list4;
-list4=list3+list2+list1;
-cout<<"Size of list4 is "<<list4.getSize()<<endl;
-cout<<"Contents of list4"<<endl;
-for(int e=0;e<list4.getSize();e++) cout<<list4.get(e,&k)<<" ";
+TMArrayList list6;
+list6=list5+list1;
+cout<<"After list6=list5+list1"<<endl;
+cout<<"Size of list6 is "<<list6.getSize()<<endl;
+cout<<"Contents of list6"<<endl;
+for(int e=0;e<list6.getSize();e++) cout<<list6.get(e,&k)<<" ";
 cout<<endl;
+cout<<endl<<"*******************"<<endl;
 
+list1=list5;
+cout<<"After list1=list5"<<endl;
+cout<<"Size of list1 is "<<list1.getSize()<<endl;
+cout<<"Contents of list1"<<endl;
+for(int e=0;e<list1.getSize();e++) cout<<list1.get(e,&k)<<" ";
+cout<<endl;
+cout<<endl<<"*******************"<<endl;
+
+list2+=list6;
+cout<<"After list2+=list6"<<endl;
+cout<<"Size of list2 is "<<list2.getSize()<<endl;
+cout<<"Contents of list2"<<endl;
+for(int e=0;e<list2.getSize();e++) cout<<list2.get(e,&k)<<" ";
+cout<<endl;
+cout<<endl<<"*******************"<<endl;
+
+TMArrayList list7(list6);
+cout<<"Contents of list7"<<endl;
+for(int e=0;e<list7.getSize();e++) cout<<list7.get(e,&k)<<" ";
+cout<<endl;
+cout<<endl<<"*******************"<<endl;
 
 return 0;
 }
