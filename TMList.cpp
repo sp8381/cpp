@@ -161,7 +161,6 @@ this->add(other.get(i,&succ),&succ);
 TMArrayList::TMArrayList(const TMList &other)
 {
 cout<<"Parameterised constructor of TMArrayList with parameter TMList &"<<endl;
-	//Here, we can also allocate memory using default constructor.
 int rows;
 int numberOfPointers;
 int bufferSize=other.getSize();
@@ -231,7 +230,6 @@ return *this;
 
 TMArrayList & TMArrayList::operator=(const TMList &other)	
 {
-this->clear();
 cout<<"Operator= got called for TMArrayList with parameter TMList"<<endl;
 this->size=0;
 int succ;
@@ -394,6 +392,7 @@ TMNode()
 {
 this->next=NULL;
 }
+friend class Iterator;
 };
 
 private:
@@ -421,7 +420,45 @@ int  removeAt(int index,int *success);
 void update(int index,int data,int *success);
 void removeAll();
 void clear();
+int iterator()
+{
+Iterator iter;
+TMNode *t;
+t=this->start;
+iter.setAddress(t);
+int num;
+while(iter.hasNext())
+{
+num=iter.next();
+cout<<num<<endl;
+}
+return 0;
+}
+
+class Iterator
+{
+TMNode *ptr;
+public:
+void setAddress(TMNode *t)
+{
+this->ptr=t;
+}
+int hasNext()
+{
+if(ptr==NULL) return false;
+else return true;
+}
+int next()
+{
+int data=ptr->data;
+ptr=ptr->next;
+return data;
+}
+friend class TMNode;
 };
+
+};
+
 TMForwardList::TMForwardList()
 {
 this->start=NULL;
@@ -780,47 +817,8 @@ for(int i=0;i<list2.getSize();i++) cout<<list2.get(i,&k)<<"  ";
 cout<<endl;
 cout<<endl<<"*******************"<<endl;
 
-
-TMArrayList list5(list1);
-cout<<"After list5(list1) "<<endl;
-list5.add(1010,&k);
-list5.add(1221,&k);
-list5.add(3223,&k);
-cout<<"Contents of list5"<<endl;
-for(int e=0;e<list5.getSize();e++) cout<<list5.get(e,&k)<<" ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
-
-TMArrayList list6;
-list6=list5+list1;
-cout<<"After list6=list5+list1"<<endl;
-cout<<"Size of list6 is "<<list6.getSize()<<endl;
-cout<<"Contents of list6"<<endl;
-for(int e=0;e<list6.getSize();e++) cout<<list6.get(e,&k)<<" ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
-
-list1=list5;
-cout<<"After list1=list5"<<endl;
-cout<<"Size of list1 is "<<list1.getSize()<<endl;
-cout<<"Contents of list1"<<endl;
-for(int e=0;e<list1.getSize();e++) cout<<list1.get(e,&k)<<" ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
-
-list2+=list6;
-cout<<"After list2+=list6"<<endl;
-cout<<"Size of list2 is "<<list2.getSize()<<endl;
-cout<<"Contents of list2"<<endl;
-for(int e=0;e<list2.getSize();e++) cout<<list2.get(e,&k)<<" ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
-
-TMArrayList list7(list6);
-cout<<"Contents of list7"<<endl;
-for(int e=0;e<list7.getSize();e++) cout<<list7.get(e,&k)<<" ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
-
+int iter;
+iter=list2.iterator();
+iter=list1.iterator();
 return 0;
 }
