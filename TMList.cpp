@@ -1,4 +1,6 @@
 #include<iostream>
+using namespace std;
+
 #define bool int
 #define true 1
 #define True 1
@@ -7,7 +9,47 @@
 #define False 0
 #define FALSE 0
 
-using namespace std;
+class Iterator
+{
+Iterator *iterator;
+
+public:
+Iterator ()
+{
+this->iterator=NULL;
+}
+Iterator(Iterator *iterator)
+{
+this->iterator=iterator;
+}
+Iterator(const Iterator &other)
+{
+this->iterator=iterator;
+}
+Iterator & operator=(const Iterator &other)
+{
+this->iterator=iterator;
+return *this;
+}
+virtual int hasMoreElements()
+{
+if(iterator!=NULL) return this->iterator->hasMoreElements();
+return 0;
+}
+virtual int next()
+{
+if(iterator!=NULL) return this->iterator->next();
+return 0;
+}
+
+};
+
+class Iterable
+{
+public:
+virtual Iterator getIterator()=0;
+};
+
 class TMList
 {
 public:
@@ -381,7 +423,7 @@ void TMArrayList::clear()
 
 //TMForwardList Implementation starts here 
 
-class TMForwardList:public TMList
+class TMForwardList:public TMList,public Iterable
 {
 class TMNode
 {
@@ -392,13 +434,60 @@ TMNode()
 {
 this->next=NULL;
 }
-friend class Iterator;
 };
 
 private:
 TMNode *start,*end;
 int size;
 int allocationFlag;		//for handling issue related to operator +
+
+public:
+class TMForwardListIterator:public Iterator
+{
+TMNode *ptr;
+public:
+TMForwardListIterator()
+{
+this->ptr=NULL;
+}
+void init(TMNode *ptr)		//initialize method 
+{
+this->ptr=ptr;
+}
+TMForwardListIterator(const TMForwardListIterator &other)
+{
+this->ptr=other.ptr;
+}
+TMForwardListIterator & operator=(const TMForwardListIterator &other)
+{
+this->ptr=other.ptr;
+return *this;
+}
+int hasMoreElements()
+{
+return this->ptr!=NULL;
+}
+int next()
+{
+if(this->ptr==NULL) return 0;
+int data=this->ptr->data;
+this->ptr=this->ptr->next;
+return data;
+}
+};
+
+private:
+TMForwardListIterator tmForwardListIterator; 	//object created 
+
+public:
+Iterator getIterator()
+{
+tmForwardListIterator.init(this->start);
+return Iterator(&tmForwardListIterator);	//an anonymous object created 
+						//which have address of 
+						//object of tmForwardListIterator.
+}
+
 public:
 TMForwardList();
 TMForwardList(int bufferSize);
@@ -420,45 +509,7 @@ int  removeAt(int index,int *success);
 void update(int index,int data,int *success);
 void removeAll();
 void clear();
-int iterator()
-{
-Iterator iter;
-TMNode *t;
-t=this->start;
-iter.setAddress(t);
-int num;
-while(iter.hasNext())
-{
-num=iter.next();
-cout<<num<<endl;
-}
-return 0;
-}
-
-class Iterator
-{
-TMNode *ptr;
-public:
-void setAddress(TMNode *t)
-{
-this->ptr=t;
-}
-int hasNext()
-{
-if(ptr==NULL) return false;
-else return true;
-}
-int next()
-{
-int data=ptr->data;
-ptr=ptr->next;
-return data;
-}
-friend class TMNode;
 };
-
-};
-
 TMForwardList::TMForwardList()
 {
 this->start=NULL;
@@ -796,29 +847,21 @@ return 0;
 
 int main()
 {
-TMForwardList list1(6000);
+TMForwardList list1;
 bool k;
-for(int i=101;i<=105;i++) list1.add(i,&k);
-if(k) cout<<"Added Successfully"<<endl;
-else cout<<"Unable to add"<<endl;
-cout<<"Size of list1 is : "<<list1.getSize()<<endl;
-cout<<"Contents of list1"<<endl;
-for(int i=0;i<list1.getSize();i++) cout<<list1.get(i,&k)<<"  ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
+list1.add(100,&k);
+list1.add(20,&k);
+list1.add(30,&k);
+list1.add(543,&k);
+list1.add(423,&k);
+list1.add(4234,&k);
+list1.add(232,&k);
 
-TMForwardList list2;
-list2.add(1010,&k);
-list2.add(2020,&k);
-list2.add(3030,&k);
-cout<<"Size of list2 is : "<<list2.getSize()<<endl;
-cout<<"Contents of list2"<<endl;
-for(int i=0;i<list2.getSize();i++) cout<<list2.get(i,&k)<<"  ";
-cout<<endl;
-cout<<endl<<"*******************"<<endl;
+Iterator iterator=list1.getIterator();
+while(iterator.hasMoreElements())
+{
+cout<<iterator.next()<<endl;
+}
 
-int iter;
-iter=list2.iterator();
-iter=list1.iterator();
 return 0;
 }
