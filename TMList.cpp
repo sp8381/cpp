@@ -1,4 +1,5 @@
 #include<iostream>
+#include<typeinfo>
 using namespace std;
 
 #define bool int
@@ -24,11 +25,11 @@ this->iterator=iterator;
 }
 Iterator(const Iterator &other)
 {
-this->iterator=iterator;
+this->iterator=other.iterator;
 }
 Iterator & operator=(const Iterator &other)
 {
-this->iterator=iterator;
+this->iterator=other.iterator;
 return *this;
 }
 virtual int hasMoreElements()
@@ -38,8 +39,18 @@ return 0;
 }
 virtual int next()
 {
-if(iterator!=NULL) return this->iterator->next();
+if(iterator!=NULL) 
+{
+return this->iterator->next();
+}
 return 0;
+}
+
+//base class destructor 
+virtual ~Iterator()
+{
+delete this;
+cout<<"Iterator class destructor "<<endl;
 }
 
 };
@@ -64,7 +75,7 @@ virtual void removeAll()=0;
 virtual void clear()=0;
 TMList()
 {
-cout<<"Default constructor of TMlist"<<endl;
+//cout<<"Default constructor of TMlist"<<endl;
 }
 TMList(const TMList &other)
 {
@@ -450,7 +461,8 @@ TMForwardListIterator()
 {
 this->ptr=NULL;
 }
-void init(TMNode *ptr)		//initialize method 
+
+TMForwardListIterator(TMNode *ptr) 
 {
 this->ptr=ptr;
 }
@@ -474,16 +486,25 @@ int data=this->ptr->data;
 this->ptr=this->ptr->next;
 return data;
 }
+
+//TMForwardListIterator class destructor
+virtual ~TMForwardListIterator()
+{
+delete this;
+cout<<"TMForwardListIterator class destructor "<<endl;
+}
+
 };
 
-private:
-TMForwardListIterator tmForwardListIterator; 	//object created 
 
 public:
 Iterator getIterator()
 {
-tmForwardListIterator.init(this->start);
-return Iterator(&tmForwardListIterator);	//an anonymous object created 
+TMForwardListIterator *tmForwardListIterator; 		//pointer created 
+tmForwardListIterator=new TMForwardListIterator(this->start);
+//TMForwardListIterator k(this->start);
+return Iterator(tmForwardListIterator);		//now, a new object is passed
+						//an anonymous object created 
 						//which have address of 
 						//object of tmForwardListIterator.
 }
@@ -857,11 +878,18 @@ list1.add(423,&k);
 list1.add(4234,&k);
 list1.add(232,&k);
 
-Iterator iterator=list1.getIterator();
-while(iterator.hasMoreElements())
-{
-cout<<iterator.next()<<endl;
-}
+Iterator iterator1=list1.getIterator();
+Iterator iterator2=list1.getIterator();
+Iterator iterator3=list1.getIterator();
+
+cout<<iterator1.next()<<endl;
+cout<<iterator2.next()<<endl;
+cout<<iterator3.next()<<endl;
+cout<<"*******************************"<<endl;
+cout<<iterator1.next()<<endl;
+cout<<iterator2.next()<<endl;
+cout<<iterator3.next()<<endl;
+
 
 return 0;
 }
