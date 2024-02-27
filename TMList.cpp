@@ -1,5 +1,4 @@
 #include<iostream>
-#include<typeinfo>
 using namespace std;
 
 #define bool int
@@ -39,18 +38,13 @@ return 0;
 }
 virtual int next()
 {
-if(iterator!=NULL) 
-{
-return this->iterator->next();
-}
+if(iterator!=NULL) return this->iterator->next();
 return 0;
 }
 
-//base class destructor 
 virtual ~Iterator()
 {
-delete this;
-cout<<"Iterator class destructor "<<endl;
+cout<<"Iterator destrctor"<<endl;
 }
 
 };
@@ -75,7 +69,7 @@ virtual void removeAll()=0;
 virtual void clear()=0;
 TMList()
 {
-//cout<<"Default constructor of TMlist"<<endl;
+cout<<"Default constructor of TMlist"<<endl;
 }
 TMList(const TMList &other)
 {
@@ -466,6 +460,11 @@ TMForwardListIterator(TMNode *ptr)
 {
 this->ptr=ptr;
 }
+TMForwardListIterator(const TMForwardListIterator *other)
+{
+this->ptr=other->ptr;
+}
+
 TMForwardListIterator(const TMForwardListIterator &other)
 {
 this->ptr=other.ptr;
@@ -488,11 +487,7 @@ return data;
 }
 
 //TMForwardListIterator class destructor
-virtual ~TMForwardListIterator()
-{
-delete this;
-cout<<"TMForwardListIterator class destructor "<<endl;
-}
+ 
 
 };
 
@@ -502,12 +497,15 @@ Iterator getIterator()
 {
 TMForwardListIterator *tmForwardListIterator; 		//pointer created 
 tmForwardListIterator=new TMForwardListIterator(this->start);
-//TMForwardListIterator k(this->start);
+//TMForwardListIterator k(tmForwardListIterator);
+//return k;
 return Iterator(tmForwardListIterator);		//now, a new object is passed
 						//an anonymous object created 
 						//which have address of 
 						//object of tmForwardListIterator.
 }
+
+
 
 public:
 TMForwardList();
@@ -889,7 +887,6 @@ cout<<"*******************************"<<endl;
 cout<<iterator1.next()<<endl;
 cout<<iterator2.next()<<endl;
 cout<<iterator3.next()<<endl;
-
 
 return 0;
 }
