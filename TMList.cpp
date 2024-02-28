@@ -63,7 +63,7 @@ public:
 virtual Iterator getIterator()=0;
 };
 
-class TMList
+class TMList:public Iterable
 {
 public:
 virtual void add(int data,bool *success)=0;
@@ -77,11 +77,11 @@ virtual void removeAll()=0;
 virtual void clear()=0;
 TMList()
 {
-cout<<"Default constructor of TMlist"<<endl;
+//cout<<"Default constructor of TMlist"<<endl;
 }
 TMList(const TMList &other)
 {
-cout<<"Copy constructor of TMlist"<<endl;
+//cout<<"Copy constructor of TMlist"<<endl;
 }
 
 };
@@ -106,6 +106,68 @@ int capacity;
 int size;
 bool addRow();
 int allocationFlag;		//for handling issue related to operator +
+
+
+public:
+class TMArrayListIterator:public Iterator
+{
+int index;
+int size;
+int **ptr;
+
+public:
+TMArrayListIterator(int **ptr,int size)
+{
+this->index=0;
+this->size=size;
+this->ptr=ptr;
+}
+
+/*TMArrayListIterator(const TMArrayListIterator *other)
+{
+this->index=other.index;
+}*/
+
+TMArrayListIterator(const TMArrayListIterator &other)
+{
+this->index=other.index;
+}
+TMArrayListIterator & operator=(const TMArrayListIterator &other)
+{
+this->index=other.index;
+return *this;
+}
+int hasMoreElements()
+{
+return this->index<size;
+}
+int next()
+{
+//here also we can introduce the code to release memor just after the iteration is completed.
+if(this->index==size) return 0;
+int rowIndex=index/10;
+int columnIndex=index%10;
+int data=this->ptr[rowIndex][columnIndex];
+index++;
+return data;
+}
+};
+
+public:
+Iterator getIterator()
+{
+TMArrayListIterator *tmArrayListIterator; 		//pointer created 
+tmArrayListIterator = new TMArrayListIterator(this->ptr,this->size);
+Iterator k(tmArrayListIterator);
+k.setReleaseIteratorAfterIteration(0);
+return k;		//here a local object iss passed and due to relase Iterator flag is 0 
+			//memory won't be released.
+}
+
+
+
+
+
 public:
 TMArrayList();
 TMArrayList(int bufferSize);
@@ -436,7 +498,7 @@ void TMArrayList::clear()
 
 //TMForwardList Implementation starts here 
 
-class TMForwardList:public TMList,public Iterable
+class TMForwardList:public TMList
 {
 class TMNode
 {
@@ -868,6 +930,7 @@ return 0;
 
 int main()
 {
+cout<<"Now Iterating TMArrayList"<<endl;
 TMForwardList list1;
 bool k;
 list1.add(100,&k);
@@ -885,7 +948,29 @@ Iterator iterator3=list1.getIterator();
 cout<<iterator1.next()<<endl;
 cout<<iterator2.next()<<endl;
 cout<<iterator3.next()<<endl;
-cout<<"*******************************"<<endl;
+cout<<"**********************"<<endl;
+cout<<iterator1.next()<<endl;
+cout<<iterator2.next()<<endl;
+cout<<iterator3.next()<<endl;
+
+cout<<"Now Iterating TMForwardList"<<endl;
+TMForwardList list2;
+list2.add(100,&k);
+list2.add(20,&k);
+list2.add(30,&k);
+list2.add(543,&k);
+list2.add(423,&k);
+list2.add(4234,&k);
+list2.add(232,&k);
+
+iterator1=list2.getIterator();
+iterator2=list2.getIterator();
+iterator3=list2.getIterator();
+
+cout<<iterator1.next()<<endl;
+cout<<iterator2.next()<<endl;
+cout<<iterator3.next()<<endl;
+cout<<"**********************"<<endl;
 cout<<iterator1.next()<<endl;
 cout<<iterator2.next()<<endl;
 cout<<iterator3.next()<<endl;
