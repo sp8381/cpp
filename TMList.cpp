@@ -499,10 +499,6 @@ return data;
 if(this->releaseIteratorAfterIteration==1) delete this;
 }
 
-void setReleaseIteratorAfterIteration(int releaseIteratorAfterIteration)
-{
-this->releaseIteratorAfterIteration=releaseIteratorAfterIteration;
-}
 
 };
 
@@ -512,6 +508,8 @@ Iterator getIterator()
 {
 TMForwardListIterator *tmForwardListIterator; 		//pointer created 
 tmForwardListIterator=new TMForwardListIterator(this->start);
+TMForwardListIterator k(tmForwardListIterator);
+return k;
 return Iterator(tmForwardListIterator);		//now, a new object is passed
 						//an anonymous object created 
 						//which have address of 
