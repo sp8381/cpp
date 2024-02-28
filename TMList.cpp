@@ -450,23 +450,29 @@ public:
 class TMForwardListIterator:public Iterator
 {
 TMNode *ptr;
+int releaseIteratorAfterIteration;
 public:
 TMForwardListIterator()
 {
+releaseIteratorAfterIteration=1;
 this->ptr=NULL;
 }
 
 TMForwardListIterator(TMNode *ptr) 
 {
+releaseIteratorAfterIteration=1;
 this->ptr=ptr;
 }
+
 TMForwardListIterator(const TMForwardListIterator *other)
 {
+releaseIteratorAfterIteration=1;
 this->ptr=other->ptr;
 }
 
 TMForwardListIterator(const TMForwardListIterator &other)
 {
+releaseIteratorAfterIteration=1;
 this->ptr=other.ptr;
 }
 TMForwardListIterator & operator=(const TMForwardListIterator &other)
@@ -480,6 +486,7 @@ return this->ptr!=NULL;
 }
 int next()
 {
+//here also we can introduce the code to release memor just after the iteration is completed.
 if(this->ptr==NULL) return 0;
 int data=this->ptr->data;
 this->ptr=this->ptr->next;
@@ -487,7 +494,15 @@ return data;
 }
 
 //TMForwardListIterator class destructor
- 
+~TMForwardListIterator()
+{
+if(this->releaseIteratorAfterIteration==1) delete this;
+}
+
+void setReleaseIteratorAfterIteration(int releaseIteratorAfterIteration)
+{
+this->releaseIteratorAfterIteration=releaseIteratorAfterIteration;
+}
 
 };
 
@@ -497,15 +512,11 @@ Iterator getIterator()
 {
 TMForwardListIterator *tmForwardListIterator; 		//pointer created 
 tmForwardListIterator=new TMForwardListIterator(this->start);
-TMForwardListIterator k(tmForwardListIterator);
-return k;
-//return Iterator(tmForwardListIterator);		//now, a new object is passed
+return Iterator(tmForwardListIterator);		//now, a new object is passed
 						//an anonymous object created 
 						//which have address of 
 						//object of tmForwardListIterator.
 }
-
-
 
 public:
 TMForwardList();
