@@ -458,29 +458,25 @@ public:
 class TMForwardListIterator:public Iterator
 {
 TMNode *ptr;
-int releaseIteratorAfterIteration;
+
 public:
 TMForwardListIterator()
 {
-releaseIteratorAfterIteration=1;
 this->ptr=NULL;
 }
 
 TMForwardListIterator(TMNode *ptr) 
 {
-releaseIteratorAfterIteration=1;
 this->ptr=ptr;
 }
 
 TMForwardListIterator(const TMForwardListIterator *other)
 {
-releaseIteratorAfterIteration=1;
 this->ptr=other->ptr;
 }
 
 TMForwardListIterator(const TMForwardListIterator &other)
 {
-releaseIteratorAfterIteration=1;
 this->ptr=other.ptr;
 }
 TMForwardListIterator & operator=(const TMForwardListIterator &other)
@@ -500,9 +496,7 @@ int data=this->ptr->data;
 this->ptr=this->ptr->next;
 return data;
 }
-
 };
-
 
 public:
 Iterator getIterator()
