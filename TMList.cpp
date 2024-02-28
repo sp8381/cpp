@@ -510,7 +510,7 @@ TMForwardListIterator *tmForwardListIterator; 		//pointer created
 tmForwardListIterator=new TMForwardListIterator(this->start);
 TMForwardListIterator k(tmForwardListIterator);
 return k;
-return Iterator(tmForwardListIterator);		//now, a new object is passed
+//return Iterator(tmForwardListIterator);		//now, a new object is passed
 						//an anonymous object created 
 						//which have address of 
 						//object of tmForwardListIterator.
