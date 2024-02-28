@@ -931,7 +931,7 @@ return 0;
 int main()
 {
 cout<<"Now Iterating TMArrayList"<<endl;
-TMForwardList list1;
+TMArrayList list1;
 bool k;
 list1.add(100,&k);
 list1.add(20,&k);
