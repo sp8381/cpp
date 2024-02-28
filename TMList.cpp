@@ -11,19 +11,24 @@ using namespace std;
 
 class Iterator
 {
+private :
+int releaseIteratorAfterIteration;
 Iterator *iterator;
 
 public:
 Iterator ()
 {
+this->releaseIteratorAfterIteration=1;
 this->iterator=NULL;
 }
 Iterator(Iterator *iterator)
 {
+this->releaseIteratorAfterIteration=1;
 this->iterator=iterator;
 }
 Iterator(const Iterator &other)
 {
+this->releaseIteratorAfterIteration=1;
 this->iterator=other.iterator;
 }
 Iterator & operator=(const Iterator &other)
@@ -38,15 +43,18 @@ return 0;
 }
 virtual int next()
 {
+//here also we can add the code to delete the iterator and release the dynamically allocated memory 
 if(iterator!=NULL) return this->iterator->next();
 return 0;
 }
-
 virtual ~Iterator()
 {
-cout<<"Iterator destrctor"<<endl;
+if(this->releaseIteratorAfterIteration==1) delete this->iterator;
 }
-
+void setReleaseIteratorAfterIteration(int releaseIteratorAfterIteration)
+{
+this-> releaseIteratorAfterIteration = releaseIteratorAfterIteration;
+}
 };
 
 class Iterable
@@ -493,13 +501,6 @@ this->ptr=this->ptr->next;
 return data;
 }
 
-//TMForwardListIterator class destructor
-~TMForwardListIterator()
-{
-if(this->releaseIteratorAfterIteration==1) delete this;
-}
-
-
 };
 
 
@@ -508,12 +509,10 @@ Iterator getIterator()
 {
 TMForwardListIterator *tmForwardListIterator; 		//pointer created 
 tmForwardListIterator=new TMForwardListIterator(this->start);
-TMForwardListIterator k(tmForwardListIterator);
-return k;
-//return Iterator(tmForwardListIterator);		//now, a new object is passed
-						//an anonymous object created 
-						//which have address of 
-						//object of tmForwardListIterator.
+Iterator k(tmForwardListIterator);
+k.setReleaseIteratorAfterIteration(0);
+return k;		//here a local object iss passed and due to relase Iterator flag is 0 
+			//memory won't be released.
 }
 
 public:
