@@ -74,6 +74,7 @@ int x=1;
 char m;
 while(1)
 {
+// m=fgetc(k); in c programming 
 k>>m;
 if(k.fail()) break;
 nm[0]=m;
