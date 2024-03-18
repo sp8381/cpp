@@ -3,6 +3,8 @@
 #include<iostream>
 #include<string.h>
 #include<stdio.h>
+#include<ios>
+#include<limits>
 using namespace std;
 
 class OutputFileStream
@@ -67,6 +69,36 @@ fputc(c,this->f);
 this->lastOperationFailed=0;
 return *this;
 }
+//version 2 methods
+
+OutputFileStream & operator<<(const char *str)
+{
+this->lastOperationFailed=1;
+if(this->f==NULL) return *this;
+fputs(str,this->f);
+this->lastOperationFailed=0;
+return *this;
+}
+OutputFileStream & operator<<(string str)
+{
+this->lastOperationFailed=1;
+if(this->f==NULL) return *this;
+fputs(str.c_str(),this->f);
+this->lastOperationFailed=0;
+return *this;
+}
+
+OutputFileStream & operator<<(int num)
+{
+char str[21];
+sprintf(str,"%d",num);
+this->lastOperationFailed=1;
+if(this->f==NULL) return *this;
+fputs(str,this->f);
+this->lastOperationFailed=0;
+return *this;
+}
+
 };
 
 class InputFileStream
@@ -118,100 +150,107 @@ if(feof(this->f)) return *this;
 this->lastOperationFailed=0;
 return *this;
 }
+
+//version 2 methods
+InputFileStream & operator>>(char *str)
+{
+this->lastOperationFailed=1;
+if(this->f==NULL) return *this;
+if(feof(this->f)) return *this;
+char g;
+char *p=str;
+while(1)
+{
+g=fgetc(this->f);
+if(feof(this->f) || g=='\n') break;
+*p=g;
+p++;
+}
+*p='\0';
+this->lastOperationFailed=0;
+return *this;
+}
+InputFileStream & operator>>(string &str)
+{
+str.clear();
+this->lastOperationFailed=1;
+if(this->f==NULL) return *this;
+if(feof(this->f)) return *this;
+char g;
+while(1)
+{
+g=fgetc(this->f);
+if(feof(this->f) || g=='\n') break;
+str.push_back(g);
+}
+this->lastOperationFailed=0;
+return *this;
+}
+InputFileStream & operator>>(int &num)
+{
+char a[21];
+this->lastOperationFailed=1;
+if(this->f==NULL) return *this;
+if(feof(this->f)) return *this;
+char g;
+int x=0;
+while(1)
+{
+g=fgetc(this->f);
+if(feof(this->f) || g==' ' || g=='\n') break;
+a[x]=g;
+x++;
+}
+if(x==0) return *this;
+a[x]='\0';
+this->lastOperationFailed=0;
+num=atoi(a);
+return *this;
+}
+
 };
 
-
-void addFriend()
+void addStudent()
 {
-char m;
-char name[22],contactNumber[82];
+int rollNumber;
+string name;
+char gender;
+cout<<"Enter roll nnumber : ";
+cin>>rollNumber;
+cin.ignore(numeric_limits<streamsize>::max(),'\n');
 cout<<"Enter a name : ";
-fgets(name,22,stdin);
-//while(m=getchar()!='\n');
-name[strlen(name)-1]='\0';
-int i=0;
-while(name[i]!='\0')
-{
-if(name[i]=='!')
-{
-cout<<"Name cannot contain '!' symbol"<<endl;
-return ;
-}
-i++;
-}
-cout<<"Enter contact number : ";
-fgets(contactNumber,82,stdin);
-//while(m=getchar()!='\n');
-contactNumber[strlen(contactNumber)-1]='\0';
-i=0;
-while(contactNumber[i]!='\0')
-{
-if(contactNumber[i]=='!')
-{
-cout<<"Contact number cannot contain '!' symbol"<<endl;
-return ;
-}
-if(contactNumber[i]<48 || contactNumber[i]>57)
-{
-cout<<"Enter numbers"<<endl;
-return;
-}
-i++;
-}
-OutputFileStream f("friends.ddd",OutputFileStream::append);
-i=0;
-while(name[i]!='\0')
-{
-f<<name[i];
-i++;
-}
-f<<'!';
-i=0;
-while(contactNumber[i]!='\0')
-{
-f<<contactNumber[i];
-i++;
-}
-f<<'!';
+getline(cin,name);
+cout<<"Enter Gender : ";
+cin>>gender;
+
+OutputFileStream f("students.dat",OutputFileStream::append);
+
+f<<rollNumber;
+f<<" ";
+f<<name;
+f<<"\n";
+f<<gender;
 f.close();
-cout<<"Friend Added"<<endl;
 }
-void displayListOfFriend()
+
+void displayListOfStudent()
 {
-InputFileStream k("friends.ddd");
+InputFileStream k("students.dat");
 if(k.fail())
 {
-cout<<"No friends added"<<endl;
+cout<<"No students added."<<endl;
 return;
 }
-char nm[21],cn[81];
-int x=1;
-char m;
+int rollNumber;
+string name;
+char gender;
 while(1)
 {
-// m=fgetc(k); in c programming 
-k>>m;
+k>>rollNumber;
 if(k.fail()) break;
-nm[0]=m;
-x=1;
-while(1)
-{
-k>>m;
-if(m=='!') break;
-nm[x]=m;
-x++;
-}
-nm[x]='\0';
-x=0;
-while(1)
-{
-k>>m;
-if(m=='!') break;
-cn[x]=m;
-x++;
-}
-cn[x]='\0';
-cout<<"Name : "<<nm<<", Contact Number : "<<cn<<endl;
+k>>name;
+k>>gender;
+cout<<"RollNumber : "<<rollNumber<<", Name : "<<name<<", Gender : "<<gender<<endl;
 }
 k.close();
 }
@@ -222,14 +261,14 @@ int ch;
 char m;
 while(1)
 {
-cout<<"1. Add Friend."<<endl;
-cout<<"2. Display list of Friend"<<endl;
+cout<<"1. Add Student."<<endl;
+cout<<"2. Display list of Student"<<endl;
 cout<<"3. Exit"<<endl;
 cout<<"Enter you choice : ";
 scanf("%d",&ch);
 while(m=getchar()!='\n');
-if(ch==1) addFriend();
-if(ch==2) displayListOfFriend();
+if(ch==1) addStudent();
+if(ch==2) displayListOfStudent();
 //if(ch!=1 || ch!=2) break;
 if(ch==3) break;
 }
