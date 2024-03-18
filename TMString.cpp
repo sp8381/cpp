@@ -56,10 +56,13 @@ int getSize()
 {
 return this->size;
 }
+//constructors
 TMString();
 TMString(const char *ptr);
 TMString(const TMString &other);
 ~TMString();
+
+//operator functions
 TMString & operator=(const TMString &other);
 TMString & operator=(const char *ptr);
 TMString operator+(const TMString &other);

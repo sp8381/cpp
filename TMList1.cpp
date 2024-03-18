@@ -9,11 +9,12 @@ using namespace std;
 #define False 0
 #define FALSE 0
 
+template<class T1>
 class Iterator
 {
 private :
 int releaseIteratorAfterIteration;
-Iterator *iterator;
+Iterator<T1> *iterator;
 
 public:
 Iterator ()
@@ -21,17 +22,17 @@ Iterator ()
 this->releaseIteratorAfterIteration=1;
 this->iterator=NULL;
 }
-Iterator(Iterator *iterator)
+Iterator(Iterator<T1> *iterator)
 {
 this->releaseIteratorAfterIteration=1;
 this->iterator=iterator;
 }
-Iterator(const Iterator &other)
+Iterator(const Iterator<T1> &other)
 {
 this->releaseIteratorAfterIteration=1;
 this->iterator=other.iterator;
 }
-Iterator & operator=(const Iterator &other)
+Iterator<T1> & operator=(const Iterator<T1> &other)
 {
 this->iterator=other.iterator;
 return *this;
@@ -41,7 +42,7 @@ virtual int hasMoreElements()
 if(iterator!=NULL) return this->iterator->hasMoreElements();
 return 0;
 }
-virtual int next()
+virtual T1 next()
 {
 //here also we can add the code to delete the iterator and release the dynamically allocated memory 
 if(iterator!=NULL) return this->iterator->next();
@@ -57,29 +58,31 @@ this-> releaseIteratorAfterIteration = releaseIteratorAfterIteration;
 }
 };
 
+template<class T1>
 class Iterable
 {
 public:
-virtual Iterator getIterator()=0;
+virtual Iterator<T1> getIterator()=0;
 };
 
-class TMList:public Iterable
+template<class T1>
+class TMList:public Iterable<T1>
 {
 public:
-virtual void add(int data,bool *success)=0;
-virtual int get(int index,int *success) const =0;
+virtual void add(T1 data,bool *success)=0;
+virtual T1 get(int index,int *success) const =0;
 virtual int getSize() const=0;
 
-virtual void insertAt(int index,int data,bool *success)=0;
-virtual int removeAt(int index,int *success)=0;
-virtual void update(int index,int data,int *success)=0;
+virtual void insertAt(int index,T1 data,bool *success)=0;
+virtual T1 removeAt(int index,int *success)=0;
+virtual void update(int index,T1 data,int *success)=0;
 virtual void removeAll()=0;
 virtual void clear()=0;
 TMList()
 {
 //cout<<"Default constructor of TMlist"<<endl;
 }
-TMList(const TMList &other)
+TMList(const TMList<T1> &other)
 {
 //cout<<"Copy constructor of TMlist"<<endl;
 }
@@ -95,13 +98,14 @@ operator+= (Done)
 operator[]	self
 operator+ 
 virtual destructor 
-
 */
 
-class TMArrayList:public TMList
+
+template<class T1>
+class TMArrayList:public TMList<T1>
 {
 private:
-int **ptr;
+T1 **ptr;
 int capacity;
 int size;
 bool addRow();
@@ -109,14 +113,14 @@ int allocationFlag;		//for handling issue related to operator +
 
 
 public:
-class TMArrayListIterator:public Iterator
+class TMArrayListIterator:public Iterator<T1>
 {
 int index;
 int size;
-int **ptr;
+T1 **ptr;
 
 public:
-TMArrayListIterator(int **ptr,int size)
+TMArrayListIterator(T1 **ptr,int size)
 {
 this->index=0;
 this->size=size;
@@ -141,24 +145,25 @@ int hasMoreElements()
 {
 return this->index<size;
 }
-int next()
+T1 next()
 {
 //here also we can introduce the code to release memor just after the iteration is completed.
 if(this->index==size) return 0;
 int rowIndex=index/10;
 int columnIndex=index%10;
-int data=this->ptr[rowIndex][columnIndex];
+T1 data=this->ptr[rowIndex][columnIndex];
 index++;
 return data;
 }
 };
 
 public:
-Iterator getIterator()
+
+Iterator<T1> getIterator()
 {
 TMArrayListIterator *tmArrayListIterator; 		//pointer created 
 tmArrayListIterator = new TMArrayListIterator(this->ptr,this->size);
-Iterator k(tmArrayListIterator);
+Iterator<T1> k(tmArrayListIterator);
 k.setReleaseIteratorAfterIteration(0);
 return k;		//here a local object iss passed and due to relase Iterator flag is 0 
 			//memory won't be released.
@@ -172,57 +177,60 @@ public:
 TMArrayList();
 TMArrayList(int bufferSize);
 TMArrayList(const TMArrayList &other);
-TMArrayList(const TMList &other);
+TMArrayList(const TMList<T1> &other);
 ~TMArrayList();
 TMArrayList & operator=(const TMArrayList &other);
-TMArrayList & operator=(const TMList &other);
+TMArrayList & operator=(const TMList<T1> &other);
 void operator+=(const TMArrayList &other);
-void operator+=(const TMList &other);
+void operator+=(const TMList<T1> &other);
 TMArrayList operator+(const TMArrayList &other);
-TMArrayList operator+(const TMList &other);
-int & operator[](int index);	//assingment - (done)
-void add(int data,bool *success);
-int  get(int index,int *success) const;
+TMArrayList operator+(const TMList<T1> &other);
+T1 & operator[](int index);	//assingment - (done)
+void add(T1 data,bool *success);
+T1  get(int index,int *success) const;
 int  getSize() const;
-void insertAt(int index,int data,bool *success);
-int  removeAt(int index,int *success);
-void update(int index,int data,int *success);
+void insertAt(int index,T1 data,bool *success);
+T1  removeAt(int index,int *success);
+void update(int index,T1 data,int *success);
 void removeAll();
 void clear();
 };
-bool TMArrayList::addRow()
+template<class T1>
+bool TMArrayList<T1>::addRow()
 {
 if(capacity%100==0)
 {
 int numberOfPointers;
 numberOfPointers=this->capacity/10;
-int **tmp=new int *[numberOfPointers+10];
+T1 **tmp=new T1 *[numberOfPointers+10];
 if(tmp==NULL) return false;
 for(int i=0;i<numberOfPointers;i++) tmp[i]=this->ptr[i];
 delete [] this->ptr;
 this->ptr=tmp;
 }
 int i=this->capacity/10;
-this->ptr[i]=new int[10];
+this->ptr[i]=new T1[10];
 if(this->ptr[i]==NULL) return false;
 this->capacity=this->capacity+10;
 return true;
 }
-TMArrayList::TMArrayList()
+template<class T1>
+TMArrayList<T1>::TMArrayList()
 {
 this->allocationFlag=0;		//for handling issue related to operator +
-this->ptr=new int *[10];
-this->ptr[0]=new int[10];
+this->ptr=new T1 *[10];
+this->ptr[0]=new T1[10];
 this->capacity=10;
 this->size=0;
 }
-TMArrayList::TMArrayList(int bufferSize)
+template<class T1>
+TMArrayList<T1>::TMArrayList(int bufferSize)
 {
 this->allocationFlag=0;		//for handling issue related to operator +
 if(bufferSize<=0)
 {
-this->ptr=new int *[10];
-this->ptr[0]=new int[10];
+this->ptr=new T1 *[10];
+this->ptr[0]=new T1 [10];
 this->capacity=10;
 this->size=0;
 }
@@ -233,23 +241,24 @@ int numberOfPointers;
 rows=bufferSize/10;
 if(bufferSize%10!=0) rows++;
 numberOfPointers=rows+(10-(rows%10));
-this->ptr=new int *[numberOfPointers];
+this->ptr=new T1*[numberOfPointers];
 for(int i=0;i<rows;i++)
 {
-this->ptr[i]=new int[10];
+this->ptr[i]=new T1[10];
 }
 this->capacity=rows*10;
 this->size=0;
 }
 }
-TMArrayList::TMArrayList(const TMArrayList &other)
+template<class T1>
+TMArrayList<T1>::TMArrayList(const TMArrayList<T1> &other)
 {
 this->allocationFlag=0;		//for handling issue related to operator +
 int bufferSize=other.size;
 if(bufferSize<=0)
 {
-this->ptr=new int *[10];
-this->ptr[0]=new int[10];
+this->ptr=new T1 *[10];
+this->ptr[0]=new T1 [10];
 this->capacity=10;
 this->size=0;
 }
@@ -260,10 +269,10 @@ int numberOfPointers;
 rows=bufferSize/10;
 if(bufferSize%10!=0) rows++;
 numberOfPointers=rows+(10-(rows%10));
-this->ptr=new int *[numberOfPointers];
+this->ptr=new T1 *[numberOfPointers];
 for(int i=0;i<rows;i++)
 {
-this->ptr[i]=new int[10];
+this->ptr[i]=new T1[10];
 }
 this->capacity=rows*10;
 this->size=0;
@@ -275,19 +284,20 @@ this->add(other.get(i,&succ),&succ);
 }
 }
 
-TMArrayList::TMArrayList(const TMList &other)
+template<class T1>
+TMArrayList<T1>::TMArrayList(const TMList<T1> &other)
 {
-cout<<"Parameterised constructor of TMArrayList with parameter TMList &"<<endl;
+//cout<<"Parameterised constructor of TMArrayList with parameter TMList &"<<endl;
 int rows;
 int numberOfPointers;
 int bufferSize=other.getSize();
 rows=bufferSize/10;
 if(bufferSize%10!=0) rows++;
 numberOfPointers=rows+(10-(rows%10));
-this->ptr=new int *[numberOfPointers];
+this->ptr=new T1 *[numberOfPointers];
 for(int i=0;i<rows;i++)
 {
-this->ptr[i]=new int[10];
+this->ptr[i]=new T1 [10];
 }
 this->capacity=rows*10;
 this->size=0;
@@ -299,8 +309,8 @@ this->add(other.get(i,&succ),&succ);
 }
 }
 
-
-TMArrayList::~TMArrayList()
+template<class T1>
+TMArrayList<T1>::~TMArrayList()
 {
 if(this->allocationFlag==0)		//for handling issue related to operator +
 			 		//or this->ptr!=NULL but ptr is declared const.
@@ -314,7 +324,9 @@ delete [] this->ptr[j];
 delete [] this->ptr;
 }
 }
-TMArrayList & TMArrayList::operator=(const TMArrayList &other)	
+
+template<class T1>
+TMArrayList<T1> & TMArrayList<T1>::operator=(const TMArrayList<T1> &other)	
 {
 if(other.allocationFlag==0)		//for handling issue related to operator +
 {
@@ -345,7 +357,8 @@ this->size=other.size;
 return *this;
 }
 
-TMArrayList & TMArrayList::operator=(const TMList &other)	
+template<class T1>
+TMArrayList<T1> & TMArrayList<T1>::operator=(const TMList<T1> &other)	
 {
 cout<<"Operator= got called for TMArrayList with parameter TMList"<<endl;
 this->size=0;
@@ -357,7 +370,8 @@ this->add(other.get(e,&succ),&succ);
 return *this;
 }
 
-void TMArrayList::operator+=(const TMArrayList &other)
+template<class T1>
+void TMArrayList<T1>::operator+=(const TMArrayList<T1> &other)
 {
 int succ;
 for(int e=0;e<other.size;e++)
@@ -366,13 +380,15 @@ this->add(other.get(e,&succ),&succ);
 }
 }
 
-void TMArrayList::operator+=(const TMList &other)
+template<class T1>
+void TMArrayList<T1>::operator+=(const TMList<T1> &other)
 {
 int succ;
 for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
 
-TMArrayList TMArrayList::operator+(const TMArrayList &other)
+template<class T1>
+TMArrayList<T1> TMArrayList<T1>::operator+(const TMArrayList<T1> &other)
 {
 TMArrayList k;
 int succ;
@@ -383,7 +399,8 @@ return k;
 }
 
 
-TMArrayList TMArrayList::operator+(const TMList &other)
+template<class T1>
+TMArrayList<T1> TMArrayList<T1>::operator+(const TMList<T1> &other)
 {
 TMArrayList k;
 int succ;
@@ -393,7 +410,8 @@ k.allocationFlag=1;
 return k;
 }
 
-int & TMArrayList::operator[](int index)	//(done)
+template<class T1>
+T1 & TMArrayList<T1>::operator[](int index)	//(done)
 {
 int succ;
 int faltu;
@@ -406,7 +424,8 @@ return ptr[rowIndex][columnIndex];
 return ptr[rowIndex][columnIndex];
 }
 
-void TMArrayList::add(int data,bool *success)
+template<class T1>
+void TMArrayList<T1>::add(T1 data,bool *success)
 {
 if(success) *success=false;
 if(this->size==this->capacity)
@@ -421,7 +440,8 @@ this->size++;
 if(success) *success=true;
 }
 
-int TMArrayList::get(int index,int *success) const 
+template<class T1>
+T1 TMArrayList<T1>::get(int index,int *success) const 
 {
 if(success) *success=false;
 if(index<0 || index>=this->size) return 0;
@@ -431,12 +451,14 @@ if(success) *success=true;
 return ptr[rowIndex][columnIndex];
 }
 
-int TMArrayList::getSize() const
+template<class T1>
+int TMArrayList<T1>::getSize() const
 {
 return this->size;
 } 
 
-void TMArrayList::insertAt(int index,int data,bool *success)
+template<class T1>
+void TMArrayList<T1>::insertAt(int index,T1 data,bool *success)
 {
 if(success) *success=false;
 if(index<0 || index>this->size) return;
@@ -446,7 +468,7 @@ this->add(data,success);
 return ;
 }
 bool succ;
-int k=this->get(this->size-1,&succ);
+T1 k=this->get(this->size-1,&succ);
 this->add(k,&succ);
 if(succ==false) return;
 int j;
@@ -460,12 +482,13 @@ this->update(index,data,&succ);
 if(success) *success=true;
 }
 
-int  TMArrayList::removeAt(int index,bool *success)
+template<class T1>
+T1  TMArrayList<T1>::removeAt(int index,bool *success)
 {
 if(success) *success=false;
-if(index<0 || index>-size) return 0;
+if(index<0 || index>=this->size) return 0;
 bool succ;
-int data=this->get(index,&succ);
+T1 data=this->get(index,&succ);
 int j;
 int ep=this->size-2;
 j=index;
@@ -479,7 +502,8 @@ if(success) *success=true;
 return data;
 }
 
-void TMArrayList::update(int index,int data,bool *success)
+template<class T1>
+void TMArrayList<T1>::update(int index,T1 data,bool *success)
 {
 if(success) *success=false;
 if(index<0 || index>=size) return;
@@ -488,22 +512,27 @@ int columnIndex=index%10;
 this->ptr[rowIndex][columnIndex]=data;
 if(success) *success=true;
 }
-void TMArrayList::removeAll()
+
+template<class T1>
+void TMArrayList<T1>::removeAll()
 {
 this->size=0;
 }
-void TMArrayList::clear()
+
+template<class T1>
+void TMArrayList<T1>::clear()
 {
 }
 
 //TMForwardList Implementation starts here 
 
-class TMForwardList:public TMList
+template<class T1>
+class TMForwardList:public TMList<T1>
 {
 class TMNode
 {
 public:
-int data;
+T1 data;
 TMNode *next;
 TMNode()
 {
@@ -517,7 +546,7 @@ int size;
 int allocationFlag;		//for handling issue related to operator +
 
 public:
-class TMForwardListIterator:public Iterator
+class TMForwardListIterator:public Iterator<T1>
 {
 TMNode *ptr;
 
@@ -550,22 +579,23 @@ int hasMoreElements()
 {
 return this->ptr!=NULL;
 }
-int next()
+
+T1 next()
 {
 //here also we can introduce the code to release memor just after the iteration is completed.
 if(this->ptr==NULL) return 0;
-int data=this->ptr->data;
+T1 data=this->ptr->data;
 this->ptr=this->ptr->next;
 return data;
 }
 };
 
 public:
-Iterator getIterator()
+Iterator<T1> getIterator()
 {
 TMForwardListIterator *tmForwardListIterator; 		//pointer created 
 tmForwardListIterator=new TMForwardListIterator(this->start);
-Iterator k(tmForwardListIterator);
+Iterator<T1> k(tmForwardListIterator);
 k.setReleaseIteratorAfterIteration(0);
 return k;		//here a local object iss passed and due to relase Iterator flag is 0 
 			//memory won't be released.
@@ -575,39 +605,45 @@ public:
 TMForwardList();
 TMForwardList(int bufferSize);
 TMForwardList(const TMForwardList &other);
-TMForwardList(const TMList &other);
+TMForwardList(const TMList<T1> &other);
 ~TMForwardList();
 TMForwardList & operator=(const TMForwardList &other);
-TMForwardList & operator=(const TMList &other);
+TMForwardList & operator=(const TMList<T1> &other);
 void operator+=(const TMForwardList &other);
-void operator+=(const TMList &other);
+void operator+=(const TMList<T1> &other);
 TMForwardList operator+(const TMForwardList &other);
-TMForwardList operator+(const TMList &other);
+TMForwardList operator+(const TMList<T1> &other);
 int operator[](int index);
-void add(int data,bool *success);
-int  get(int index,int *success) const;
+
+void add(T1 data,bool *success);
+T1  get(int index,int *success) const;
 int  getSize() const;
-void insertAt(int index,int data,bool *success);
-int  removeAt(int index,int *success);
-void update(int index,int data,int *success);
+void insertAt(int index,T1 data,bool *success);
+T1  removeAt(int index,int *success);
+void update(int index,T1 data,int *success);
 void removeAll();
 void clear();
 };
-TMForwardList::TMForwardList()
+
+template<class T1>
+TMForwardList<T1>::TMForwardList()
 {
 this->start=NULL;
 this->end=NULL;
 this->size=0;
 this->allocationFlag=0;
 }
-TMForwardList::TMForwardList(int bufferSize)
+
+template<class T1>
+TMForwardList<T1>::TMForwardList(int bufferSize)
 {
 this->start=NULL;
 this->end=NULL;
 this->size=0;
 this->allocationFlag=0;
 }
-TMForwardList::TMForwardList(const TMForwardList &other)
+template<class T1>
+TMForwardList<T1>::TMForwardList(const TMForwardList<T1> &other)
 {
 this->start=NULL;
 this->end=NULL;
@@ -620,7 +656,8 @@ this->add(other.get(e,&succ),&succ);
 }
 }
 
-TMForwardList::TMForwardList(const TMList &other)
+template<class T1>
+TMForwardList<T1>::TMForwardList(const TMList<T1> &other)
 {
 cout<<"Parameterised constructor of TMForwardList with parameter TMList &"<<endl;
 this->start=NULL;
@@ -634,12 +671,14 @@ this->add(other.get(e,&succ),&succ);
 }
 }
 
-TMForwardList::~TMForwardList()
+template<class T1>
+TMForwardList<T1>::~TMForwardList()
 {
 if(allocationFlag==0) this->clear();
 }
 
-TMForwardList & TMForwardList::operator=(const TMForwardList &other)	
+template<class T1>
+TMForwardList<T1> & TMForwardList<T1>::operator=(const TMForwardList<T1> &other)	
 {
 this->clear();
 if(allocationFlag==1)
@@ -655,7 +694,8 @@ for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
 return *this;
 }
-TMForwardList & TMForwardList::operator=(const TMList &other)
+template<class T1>
+TMForwardList<T1> & TMForwardList<T1>::operator=(const TMList<T1> &other)
 {
 this->clear();
 int succ;
@@ -663,19 +703,22 @@ for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 return *this;
 }
 
-void TMForwardList::operator+=(const TMForwardList &other)
+template<class T1>
+void TMForwardList<T1>::operator+=(const TMForwardList<T1> &other)
 {
 int succ;
 for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
 
-void TMForwardList::operator+=(const TMList &other)
+template<class T1>
+void TMForwardList<T1>::operator+=(const TMList<T1> &other)
 {
 int succ;
 for(int e=0;e<other.getSize();e++) this->add(other.get(e,&succ),&succ);
 }
 
-TMForwardList TMForwardList::operator+(const TMForwardList &other)
+template<class T1>
+TMForwardList<T1> TMForwardList<T1>::operator+(const TMForwardList<T1> &other)
 {
 TMForwardList k;
 k+=(*this);
@@ -683,7 +726,8 @@ k+=other;
 return k;
 }
 
-TMForwardList TMForwardList::operator+(const TMList &other)
+template<class T1>
+TMForwardList<T1> TMForwardList<T1>::operator+(const TMList<T1> &other)
 {
 TMForwardList k;
 k+=(*this);
@@ -691,11 +735,14 @@ k+=other;
 return k;
 }
 
-int TMForwardList::operator[](int index)
+template<class T1>
+int TMForwardList<T1>::operator[](int index)
 {
 return 0;
 }
-void TMForwardList::add(int data,bool *success)
+
+template<class T1>
+void TMForwardList<T1>::add(T1 data,bool *success)
 {
 if(success) *success=false;
 TMNode *t;
@@ -714,7 +761,9 @@ this->end=t;
 this->size++;
 if(success) *success=true;
 }
-int TMForwardList::get(int index,int *success) const 
+
+template<class T1>
+T1 TMForwardList<T1>::get(int index,int *success) const 
 {
 if(success) *success=false;
 if(index<0 || index>size) return 0;
@@ -724,11 +773,15 @@ for(int x=0;x<index;x++) t=t->next;
 if(success) *success=true;
 return t->data;
 }
-int TMForwardList::getSize() const
+
+template<class T1>
+int TMForwardList<T1>::getSize() const
 {
 return this->size;
 } 
-void TMForwardList::insertAt(int index,int data,bool *success)
+
+template<class T1>
+void TMForwardList<T1>::insertAt(int index,T1 data,bool *success)
 {
 if(success) *success=false;
 if(index<0 || index>this->size) return ;
@@ -762,9 +815,11 @@ gg->next=t;
 this->size++;
 if(success) *success=true;
 }
-int  TMForwardList::removeAt(int index,bool *success)
+
+template<class T1>
+T1  TMForwardList<T1>::removeAt(int index,bool *success)
 {
-int data=0;
+T1 data=0;
 if(success) *success=false;
 if(index<0 || index>=this->size) return data;
 TMNode *t,*j;
@@ -798,7 +853,9 @@ delete t;
 if(success) *success=true;
 return data;
 }
-void TMForwardList::update(int index,int data,bool *success)
+
+template<class T1>
+void TMForwardList<T1>::update(int index,T1 data,bool *success)
 {
 if(success) *success=false;
 if(index<0 || index>=size) return;
@@ -808,11 +865,15 @@ for(t=this->start,x=0;x<index;x++,t=t->next);
 t->data=data;
 if(success) *success=true;
 }
-void TMForwardList::removeAll()
+
+template<class T1>
+void TMForwardList<T1>::removeAll()
 {
 clear();
 }
-void TMForwardList::clear()
+
+template<class T1>
+void TMForwardList<T1>::clear()
 {
 TMNode *t;
 while(this->start!=NULL) 
@@ -825,155 +886,109 @@ this->end=NULL;
 this->size=0;
 }
 
-
-int mainTMArrayList()
-{
-TMArrayList list1(6000);
-bool k;
-for(int i=100;i<=123;i++)
-{
-list1.add(i,&k);
-}
-cout<<"Size of list1 is "<<list1.getSize()<<endl;
-for(int i=0;i<list1.getSize();i++)
-{
-cout<<list1.get(i,&k)<<"  ";
-}
-cout<<endl;
-list1.update(102,5000,&k);
-if(k) cout<<"Data upadate at index 102"<<endl;
-else cout<<"Unable to update data at index 102"<<endl;
-list1.update(3,3030,&k);
-if(k)  cout<<"Data updated at index 3"<<endl;
-else cout<<"Unable to update data at index 3"<<endl;
-cout<<"list1 data"<<endl;
-for(int e=0;e<list1.getSize();e++)
-{
-cout<<list1.get(e,&k)<<" ";
-}
-cout<<endl;
-list1.insertAt(8,6060,&k);
-if(k) cout<<"Data inserted at index 8"<<endl;
-else cout <<"unable to insert data at index 8"<<endl;
-cout<<"list1 data"<<endl;
-for(int e=0;e<list1.getSize();e++)
-{
-cout<<list1.get(e,&k)<<" ";
-}
-cout<<endl;
-int u=list1.removeAt(3,&k);
-if(k) cout<<u<<" removed from index 3"<<endl;
-else cout<<"Unable to remove data from index 3"<<endl;
-cout<<"Contents of list1"<<endl;
-for(int e=0;e<list1.getSize();e++)
-{
-cout<<list1.get(e,&k)<<" ";
-}
-cout<<endl<<"*******************"<<endl;
-
-TMArrayList list2;
-list2=list1;
-cout<<"After assigning list2=list1"<<endl;
-cout<<"Contents of list2"<<endl;
-for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
-cout<<endl;
-list2.removeAll();
-cout<<"list2 contents removed"<<endl;
-for(int u=908;u<=1034;u++) list2.add(u,&k);
-cout<<"list2 data"<<endl;
-for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
-cout<<endl<<"list2 Size is "<<list2.getSize()<<endl;
-
-list2+=list1;
-cout<<"After list2+=list1 "<<endl;
-cout<<"Contents of list2"<<endl;
-for(int x=0;x<list2.getSize();x++) cout<<list2.get(x,&k)<<" ";
-cout<<endl<<"Size of list2 : "<<list2.getSize()<<endl;
-cout<<"Size of list1 : "<<list1.getSize()<<endl;
-
-TMArrayList list3;
-list3=list2+list1;
-cout<<"list3=list2+list1"<<endl;
-cout<<"Contents of list3"<<endl;
-for(int x=0;x<list3.getSize();x++) cout<<list3.get(x,&k)<<" ";
-cout<<endl;
-cout<<"Size of list3 : "<<list3.getSize()<<endl;
-cout<<"Size of list2 : "<<list2.getSize()<<endl;
-cout<<"Size of list1 : "<<list1.getSize()<<endl;
-
-cout<<"list3 data printed using Operator[] "<<endl;
-cout<<"list3[176]"<<list3[176]<<endl;
-list3[75]=2021;	//list3.update(75,2021,&succ);
-list3[76]=3029;	//(done)
-list3[77]=104;	
-list3[176]=1204;	
-list3[177]=204;	
-
-for(int x=0;x<list3.getSize();x++) cout<<list3[x]<<" ";
-cout<<endl<<"Size of list3 : "<<list3.getSize()<<endl;
-cout<<"Size of list2 : "<<list2.getSize()<<endl;
-cout<<"Size of list1 : "<<list1.getSize()<<endl;
-cout<<"list3[73] : "<<list3[73]<<endl;
-cout<<"list3[74] : "<<list3[74]<<endl;
-cout<<"list3[75] : "<<list3[75]<<endl;
-cout<<"list3[76] : "<<list3[76]<<endl;
-
-TMArrayList list4;
-list4=list1+list2+list3;
-cout<<"list4 size : "<<list4.getSize()<<endl;
-cout<<"Contents of list4"<<endl;
-for(int x=0;x<list4.getSize();x++) cout<<list4[x]<<" ";
-cout<<endl;
-
-return 0;
-}
-
 int main()
 {
 cout<<"Now Iterating TMArrayList"<<endl;
-TMArrayList list1;
+TMArrayList<char> list1;
 bool k;
-list1.add(100,&k);
-list1.add(20,&k);
-list1.add(30,&k);
-list1.add(543,&k);
-list1.add(423,&k);
-list1.add(4234,&k);
-list1.add(232,&k);
+for(int i=97;i<=122;i++)
+{
+list1.add(i,&k);
+}
 
-Iterator iterator1=list1.getIterator();
-Iterator iterator2=list1.getIterator();
-Iterator iterator3=list1.getIterator();
+TMArrayList<int> list2;
+for(int i=101;i<=111;i++)
+{
+list2.add(i,&k);
+}
 
-cout<<iterator1.next()<<endl;
-cout<<iterator2.next()<<endl;
-cout<<iterator3.next()<<endl;
-cout<<"**********************"<<endl;
-cout<<iterator1.next()<<endl;
-cout<<iterator2.next()<<endl;
-cout<<iterator3.next()<<endl;
+TMArrayList<float> list3;
+for(float i=10.22;i<=21.22;i++)
+{
+list3.add(i,&k);
+}
+
+Iterator<char> iterator1=list1.getIterator();
+Iterator<int> iterator2=list2.getIterator();
+Iterator<float> iterator3=list3.getIterator();
+
+while(iterator1.hasMoreElements())
+{
+cout<<iterator1.next()<<" ";
+}
+cout<<endl;
+cout<<list2.get(1,&k)<<endl;
+list2.update(1,545,&k);
+cout<<list2.get(1,&k)<<endl;
+cout<<list2.removeAt(1,&k)<<endl;
+cout<<"K : "<<k<<endl;
+cout<<list2.get(1,&k)<<endl;
+list2.insertAt(1,343,&k);
+cout<<list2.get(1,&k)<<endl;
+
+cout<<endl<<"************************"<<endl;
+while(iterator2.hasMoreElements())
+{
+cout<<iterator2.next()<<" ";
+}
+cout<<endl<<"************************"<<endl;
+while(iterator3.hasMoreElements())
+{
+cout<<iterator3.next()<<" ";
+}
+cout<<endl<<"************************"<<endl;
+cout<<"_______________________________"<<endl;
 
 cout<<"Now Iterating TMForwardList"<<endl;
-TMForwardList list2;
-list2.add(100,&k);
-list2.add(20,&k);
-list2.add(30,&k);
-list2.add(543,&k);
-list2.add(423,&k);
-list2.add(4234,&k);
-list2.add(232,&k);
+TMForwardList<char> list4;
+for(int i=65;i<=90;i++)
+{
+list4.add(i,&k);
+}
 
-iterator1=list2.getIterator();
-iterator2=list2.getIterator();
-iterator3=list2.getIterator();
+TMForwardList<int> list5;
+for(int i=201;i<=211;i++)
+{
+list5.add(i,&k);
+}
 
-cout<<iterator1.next()<<endl;
-cout<<iterator2.next()<<endl;
-cout<<iterator3.next()<<endl;
-cout<<"**********************"<<endl;
-cout<<iterator1.next()<<endl;
-cout<<iterator2.next()<<endl;
-cout<<iterator3.next()<<endl;
+TMForwardList<float> list6;
+for(float i=51.33;i<=61.33;i++)
+{
+list6.add(i,&k);
+}
+
+Iterator<char> iterator4=list4.getIterator();
+Iterator<int> iterator5=list5.getIterator();
+Iterator<float> iterator6=list6.getIterator();
+
+while(iterator4.hasMoreElements())
+{
+cout<<iterator4.next()<<" ";
+}
+cout<<endl<<"************************"<<endl;
+while(iterator5.hasMoreElements())
+{
+cout<<iterator5.next()<<" ";
+}
+cout<<endl<<"************************"<<endl;
+while(iterator6.hasMoreElements())
+{
+cout<<iterator6.next()<<" ";
+}
+cout<<endl<<"************************"<<endl;
+cout<<"_____________________________________"<<endl;
+
+TMForwardList<int> list14;
+list14.add(100,&k);
+list14.add(20,&k);
+list14.add(30,&k);
+list14.add(543,&k);
+list14.add(423,&k);
+list14.add(4234,&k);
+list14.add(232,&k);
+
+Iterator<int> iterator14=list14.getIterator();
 
 return 0;
 }

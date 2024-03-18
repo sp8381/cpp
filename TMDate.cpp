@@ -1,6 +1,6 @@
+#include<string.h>
 #include<iostream>
 using namespace std;
-#include<string.h>
 
 class TMDate
 {
@@ -8,6 +8,7 @@ private:
 int dayOfMonth;
 int month;
 int year;
+int dayOfWeek;
 int dayNumber;
 int toDayNumber();
 int isLeapYear(int y);
@@ -15,26 +16,45 @@ void fromDayNumber();
 void isValidDate(const char *dateString,int *isValid,int *d,int *m,int *y);
 
 public:
+//constructor function
 TMDate();
 TMDate(const char *dateString);
+TMDate(const TMDate &other);
+TMDate & operator=(const TMDate &other);
+virtual ~TMDate();
+
+//non constructor function
 int getDayOfMonth();
 int getMonth();
 int getYear();
+int isLeapYear();
+int getDayOfWeek();
+void getDayOfWeekString(char *dayOfWeekString);
+void getShortDayOfWeekString(char *shortDayOfWeekString);
+void getMonthString(char *monthString);
+void getShortMonthString(char *shortMonthString);
+
+//operator function
+TMDate & operator=(const char *dateString);
 void operator+=(int days);
 void operator-=(int days);
-
-int getDayNumber()
-{
-return dayNumber;
-}
-
+TMDate operator+(int days);
+TMDate operator-(int days);
+void operator++(int);
+void operator--(int);
+int operator<(const TMDate &other);
+int operator>(const TMDate &other);
+int operator<=(const TMDate &other);
+int operator>=(const TMDate &other);
+int operator==(const TMDate &other);
+int operator!=(const TMDate &other);
 
 };
 TMDate::TMDate()
 {
 time_t x;
 time(&x);
-struct tm *now;
+ struct tm *now;
 now=localtime(&x);
 this->dayOfMonth=now->tm_mday;
 this->month=now->tm_mon+1;
@@ -61,6 +81,48 @@ this->month=0;
 this->year=0;
 }
 }
+
+TMDate::TMDate(const TMDate &other)
+{
+this->dayNumber=other.dayNumber;
+this->dayOfMonth=other.dayOfMonth;
+this->month=other.month;
+this->year=other.year;
+}
+
+TMDate & TMDate::operator=(const TMDate &other)
+{
+this->dayNumber=other.dayNumber;
+this->dayOfMonth=other.dayOfMonth;
+this->month=other.month;
+this->year=other.year;
+return *this;
+}
+TMDate::~TMDate()
+{
+}
+TMDate & TMDate::operator=(const char *dateString)
+{
+int isValid;
+int d,m,y;
+isValidDate(dateString,&isValid,&d,&m,&y);
+if(isValid)
+{
+this->dayOfMonth=d;
+this->month=m;
+this->year=y;
+this->toDayNumber();
+}
+else
+{
+this->dayNumber=0;
+this->dayOfMonth=0;
+this->month=0;
+this->year=0;
+}
+return *this;
+}
+
 void TMDate::isValidDate(const char *dateString,int *isValid,int *d,int *m,int *y)
 {
 int dd,mm,yy;
@@ -159,7 +221,7 @@ else return 0;
 }
 void TMDate::fromDayNumber()
 {
-if(this->dayNumber==0)
+if(this->dayNumber<=0)
 {
 this->dayOfMonth=0;
 this->month=0;
@@ -175,7 +237,7 @@ while(1)
 {
 if(isLeapYear(y)) daysInYear=366;
 else daysInYear=365;
-if(x<daysInYear) break;
+if(x<=daysInYear) break;
 x=x-daysInYear;
 y=y+1;
 }
@@ -185,7 +247,7 @@ m=0;
 while(1)
 {
 daysInMonth=mth[m];
-if(x<daysInMonth) break;
+if(x<=daysInMonth) break;
 x=x-daysInMonth;
 m++;
 }
@@ -213,6 +275,96 @@ ostream & operator<<(ostream &oo,TMDate &tmDate)
 oo<<tmDate.getDayOfMonth()<<"/"<<tmDate.getMonth()<<"/"<<tmDate.getYear();
 return oo;
 }
+void TMDate::getMonthString(char *monthString)
+{
+if(monthString==NULL)
+{
+*monthString='\0';
+return;
+}
+if(this->month==1) strcpy(monthString,"January");
+else if(this->month==2) strcpy(monthString,"February");
+else if(this->month==3) strcpy(monthString,"March");
+else if(this->month==4) strcpy(monthString,"April");
+else if(this->month==5) strcpy(monthString,"May");
+else if(this->month==6) strcpy(monthString,"June");
+else if(this->month==7) strcpy(monthString,"July");
+else if(this->month==8) strcpy(monthString,"August");
+else if(this->month==9) strcpy(monthString,"September");
+else if(this->month==10) strcpy(monthString,"October");
+else if(this->month==11) strcpy(monthString,"November");
+else if(this->month==12) strcpy(monthString,"December");
+else *monthString='\0';
+}
+void TMDate::getShortMonthString(char *shortMonthString)
+{
+if(shortMonthString==NULL)
+{
+*shortMonthString='\0';
+return;
+}
+if(this->month==1) strcpy(shortMonthString,"Jan");
+else if(this->month==2) strcpy(shortMonthString,"Feb");
+else if(this->month==3) strcpy(shortMonthString,"Mar");
+else if(this->month==4) strcpy(shortMonthString,"Apr");
+else if(this->month==5) strcpy(shortMonthString,"May");
+else if(this->month==6) strcpy(shortMonthString,"Jun");
+else if(this->month==7) strcpy(shortMonthString,"Jul");
+else if(this->month==8) strcpy(shortMonthString,"Aug");
+else if(this->month==9) strcpy(shortMonthString,"Sep");
+else if(this->month==10) strcpy(shortMonthString,"Oct");
+else if(this->month==11) strcpy(shortMonthString,"Nov");
+else if(this->month==12) strcpy(shortMonthString,"Dec");
+else *shortMonthString='\0';
+}
+
+int TMDate::getDayOfWeek()
+{
+if(this->dayNumber==0) return 0;
+int dow=(this->dayNumber%7)+2;
+dow=dow%7;
+if(dow==0) return 7;
+return dow;
+
+/*	//or
+int leftDays=this->dayNumber%7;
+int dow=2+leftDays; 	//2 (Monday) as 1/1/1901 is Tue(3)
+if(dow>7) dow=dow%7;
+return dow;
+*/
+}
+void TMDate::getDayOfWeekString(char *dayOfWeekString)
+{
+if(dayOfWeekString==NULL)
+{
+*dayOfWeekString='\0';
+return;
+}
+int x=this->getDayOfWeek();
+if(x==1) strcpy(dayOfWeekString,"Sunday");
+else if(x==2) strcpy(dayOfWeekString,"Monday");
+else if(x==3) strcpy(dayOfWeekString,"Tuesday");
+else if(x==4) strcpy(dayOfWeekString,"Wednesday");
+else if(x==5) strcpy(dayOfWeekString,"Thursday");
+else if(x==6) strcpy(dayOfWeekString,"Friday");
+else strcpy(dayOfWeekString,"Saturday");
+}
+void TMDate::getShortDayOfWeekString(char *shortDayOfWeekString)
+{
+if(shortDayOfWeekString==NULL)
+{
+*shortDayOfWeekString='\0';
+return;
+}
+int x=this->getDayOfWeek();
+if(x==1) strcpy(shortDayOfWeekString,"Sun");
+else if(x==2) strcpy(shortDayOfWeekString,"Mon");
+else if(x==3) strcpy(shortDayOfWeekString,"Tue");
+else if(x==4) strcpy(shortDayOfWeekString,"Wed");
+else if(x==5) strcpy(shortDayOfWeekString,"Thu");
+else if(x==6) strcpy(shortDayOfWeekString,"Fri");
+else strcpy(shortDayOfWeekString,"Sat");
+}
 void TMDate::operator+=(int days)
 {
 if(this->dayNumber==0) return ;
@@ -226,22 +378,83 @@ if(this->dayNumber==0 || this->dayNumber<=days) return ;
 this->dayNumber-=days;
 this->fromDayNumber();
 }
+TMDate TMDate::operator+(int days)
+{
+if(this->dayNumber==0) return TMDate("0/0/0000");
+TMDate date;
+date.dayNumber=this->dayNumber+days;
+date.fromDayNumber();
+return date;
+}
+TMDate TMDate::operator-(int days)
+{
+if(this->dayNumber==0) return TMDate("0/0/0000");
+TMDate date;
+date.dayNumber=this->dayNumber-days;
+date.fromDayNumber();
+return date;
+}
+
+
+
+int TMDate::isLeapYear()
+{
+return isLeapYear(this->year);
+}
+void TMDate::operator++(int)
+{
+this->dayNumber++;
+this->fromDayNumber();
+}
+void TMDate::operator--(int)
+{
+this->dayNumber--;
+this->fromDayNumber();
+}
+
+int TMDate::operator<(const TMDate &other)
+{
+return this->dayNumber<other.dayNumber;
+}
+int TMDate::operator>(const TMDate &other)
+{
+return this->dayNumber>other.dayNumber;
+}
+int TMDate::operator<=(const TMDate &other)
+{
+return this->dayNumber<=other.dayNumber;
+}
+int TMDate::operator>=(const TMDate &other)
+{
+return this->dayNumber>=other.dayNumber;
+}
+int TMDate::operator==(const TMDate &other)
+{
+return this->dayNumber==other.dayNumber;
+}
+int TMDate::operator!=(const TMDate &other)
+{
+return this->dayNumber!=other.dayNumber;
+}
 
 int main()
 {
-TMDate date;
-cout<<date<<endl;
-cout<<date.getDayNumber()<<endl;
-date+=20;
-cout<<date<<endl;
-cout<<date.getDayNumber()<<endl;
-date-=45002;
-cout<<date<<endl;
-TMDate d2;
-d2="10/12/2020";
-cout<<d2<<endl;
-d2+=20;
-cout<<d2<<endl;
+char a[11];
+int b;
+TMDate date1="3/12/1850";
 
+for(int i=0;i<10;i++)
+{
+cout<<date1<<endl;
+date1++;
+}
+TMDate date2("10/12/2020");
+TMDate date3("1/2/2000");
+
+date3=date2=date1;
+
+cout<<date1<<endl;
+cout<<date2<<endl;
+cout<<date3<<endl;
 return 0;
 }
