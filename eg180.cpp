@@ -225,7 +225,7 @@ x++;
 cn[x]='\0';
 cout<<"Name : "<<nm<<", Contact Number : "<<cn<<endl;
 }
-
+k.close();
 }
 
 int main()

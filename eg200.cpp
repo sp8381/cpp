@@ -1,52 +1,18 @@
-#include<iostream>
-using namespace std;
-class Fridge;
-class TV
-{
-int price;
-public:
-void setPrice(int price)
-{
-this->price=price;
-}
-int getPrice()
-{
-return this->price;
-}
-friend int operator<(TV &,Fridge&);
-};
-
-class Fridge
-{
-int price;
-public:
-void setPrice(int price)
-{
-this->price=price;
-}
-int getPrice()
-{
-return this->price;
-}
-friend int operator<(TV &,Fridge&);
-};
-int operator<(TV &a,Fridge&b)
-{
-return a.price<b.price;
-}
+#include<stdio.h>
 int main()
 {
-TV t;
-Fridge f;
-t.setPrice(50000);
-f.setPrice(25000);
-if(t<f)
-{
-cout<<"TV is  cheaper than Fridge"<<endl;
-}
-else
-{
-cout<<"Fridge is cheaper than TV"<<endl;
-}
+int x=10203;
+int y=303;
+char a[81];
+
+sprintf(a,"Cool %d Good %d",x,y);
+
+printf("%s",a);
+
 return 0;
 }
+
+/*
+sprintf() function number ko string me char by char me convert krke rakh deta hai.
+
+*/
